@@ -1,0 +1,259 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.template_helpers import get_domain
+   from r2.lib.template_helpers import s3_https_if_secure
+   from r2.lib.pages.things import LinkButtons
+   from r2.lib.pages import WrappedUser
+   from r2.lib.template_helpers import static
+   from r2.lib.strings import Score, strings
+%>
+ 
+<%inherit  file="printable.html"/>
+<%namespace file="utils.html" import="plain_link, thing_timestamp, edited" />
+<%namespace file="printablebuttons.html" import="toggle_button" />
+ 
+<%def name="numcol()">
+  <% num = thing.num %>
+  <span class="rank" style="width:${thing.numcolmargin};">
+    ${thing.num}
+  </span>
+</%def>
+
+<%def name="make_link(name, css_class)">
+  <a class="${css_class} ${ c.user_is_loggedin and 'loggedin' or ''} ${thing.clicked and 'click' or ''}"
+     %if not (getattr(thing, "trial_mode", None) and thing.is_self):
+       href="${thing.href_url}"
+     %endif
+     %if thing.nofollow:
+       rel="nofollow"
+     %endif
+     %if thing.newwindow:
+       target="_blank"
+     %elif c.cname:
+       target="_top"
+     %endif
+     %if thing.mousedown_url:
+       onmousedown="save_href($(this));this.href='${thing.mousedown_url}'"
+     %endif
+     %if thing.link_child and getattr(thing, "media_override", False):
+       onclick="return expando_child(this)"
+     %endif
+     >
+     ${caller.body()}
+  </a>
+</%def>
+
+<%def name="bottom_buttons()">
+  <ul class="flat-list buttons">
+    %if thing.nsfw:
+     <li class="rounded nsfw-stamp stamp">
+       <acronym title="${_('Adult content: Not Safe For Work')}">
+         ${_("NSFW")}
+       </acronym>
+     </li>
+    %endif
+    ${self.buttons()}
+    ${self.admintagline()}
+  </ul>
+ </%def>
+
+<%def name="flair()">
+  %if c.user.pref_show_link_flair and thing.flair_text:
+    <span class="linkflairlabel">${thing.flair_text}</span>
+  %endif
+</%def>
+
+<%def name="entry()">
+  <p class="title">
+    %if c.site.link_flair_position == 'left':
+      <%call expr="flair()" />
+    %endif
+    <%call expr="make_link('title', 'title')">
+      ${thing.title}
+    </%call>
+    %if c.site.link_flair_position == 'right':
+      <%call expr="flair()" />
+    %endif
+    %if getattr(thing, "approval_checkmark", None):
+        <img class="approval-checkmark" title="${thing.approval_checkmark}"
+             src="${static('green-check.png')}"
+             onclick="alert('${thing.approval_checkmark}\n\n' +
+'${_("(no need to click for this info; just hover over the checkmark next time)")}')"
+           />
+    %endif
+    &#32;
+
+    ${self.domain()}
+
+    %if c.user_is_admin:
+        %for link_note in thing.link_notes:
+           &#32;<span class="link-note">[${link_note}]</span>
+        %endfor
+    %endif
+  </p>
+
+  ##the expando button
+  <% selftext_hide = thing.is_self and not thing.selftext %>
+  %if thing.link_child and not thing.link_child.expand and not selftext_hide:
+    <div class="expando-button collapsed
+                ${thing.link_child.css_style}"
+         onclick="expando_child(this)"></div>
+  %endif
+
+  <p class="tagline">
+    ${self.tagline()}
+  </p>
+
+  <% 
+     child_content = ""
+     if thing.link_child and thing.link_child.load:
+       child_content = unsafe(thing.link_child.content())
+     expand = thing.link_child and thing.link_child.expand
+  %>
+
+  ## if we're not on a permalink page we'll render the buttons on top
+  ## (unless it's also a jury duty listing)
+  %if not (expand or getattr(thing, "trial_mode", None)):
+    ${bottom_buttons()}
+  %endif
+
+%if not getattr(thing, "votable", True):
+  <div class="unvotable-message">${strings.unvotable_message}</div>
+%endif
+
+  <div class="expando" ${"style='display: none'" if not expand else ""}>
+    %if expand:
+      ${child_content}
+    %else:
+      <span class="error">loading...</span>
+    %endif
+  </div>
+
+  ##if we are on a permalink page, we'll render the buttons below
+  %if expand:
+    ${bottom_buttons()}
+  %endif
+
+ ##populate the expando cache if we have something
+  %if not expand and child_content:
+    <script type="text/javascript">
+      var cache = expando_cache();
+      cache["${thing._fullname}_cache"] = "${websafe(child_content)}";
+    </script>
+  %endif
+</%def>
+
+<%def name="thing_css_class(what)" buffered="True">
+${parent.thing_css_class(what)} ${"over18" if thing.over_18 else ""}
+%if c.user.pref_show_link_flair and (thing.flair_text or thing.flair_css_class):
+  <% css = thing.flair_css_class or '' %>
+  linkflair ${' '.join('linkflair-' + c for c in css.split())}
+%endif
+</%def>
+
+<%def name="thing_data_attributes(what)" buffered="True">
+${parent.thing_data_attributes(what)} data-ups="${what.upvotes}" data-downs="${what.downvotes}"
+</%def>
+
+<%def name="subreddit()" buffered="True">
+  ${plain_link(thing.subreddit.name, thing.subreddit_path, sr_path = False,
+               cname = False, _class = "subreddit hover",
+               target='_blank' if thing.newwindow else '')}
+  <script type="text/javascript">
+    reddit.sr['${thing._fullname}'] = '${thing.subreddit._fullname}';
+  </script>
+</%def>
+
+<%def name="midcol(display=True, cls = '')">
+  %if thing.pref_compress:
+    <div class="midcol ${cls}"
+  %else:
+    <div class="midcol ${cls}" style="width:${thing.midcolmargin};" 
+  %endif
+       ${not display and "style='display:none'" or ''}>
+    ${self.arrow(thing, 1, thing.likes)}
+    %if thing.pref_compress:
+      <div class="score-placeholder"></div>
+    %elif getattr(thing, "trial_mode", None):
+      <div class="score unvoted">&bull;</div> 
+    %elif thing.hide_score:
+      <div class="score likes">&bull;</div> 
+      <div class="score unvoted">&bull;</div> 
+      <div class="score dislikes">&bull;</div> 
+    %else:
+      ${self.score(thing, thing.likes, tag='div')}
+    %endif
+    ${self.arrow(thing, 0, thing.likes == False)}
+  </div>
+ ${self.thumbnail()}
+</%def>
+
+
+<%def name="domain()">
+  <span class="domain">
+    (${plain_link(thing.domain, thing.domain_path, _sr_path = False)})
+    %if c.user_is_admin:
+      &#32;
+      <a class="adminbox" href="/admin/domain/${thing.domain}">d</a>
+    %endif
+  </span>
+</%def>
+
+<%def name="tagline()">
+  <%
+    taglinetext = thing.taglinetext.replace(" ", "&#32;")
+  %>
+  ${unsafe(taglinetext % dict(reddit=self.subreddit(),
+                              score=capture(self.score, thing, thing.likes, tag='span'),
+                              when=capture(thing_timestamp, thing, thing.timesince),
+                              author=WrappedUser(thing.author, thing.attribs, thing).render(),
+                              lastedited=capture(edited, thing, thing.lastedited)
+                              ))}
+</%def>
+
+<%def name="child()">
+</%def>
+
+<%def name="buttons(comments=True, delete=True, report=True, additional='')">
+  ${LinkButtons(thing, comments = comments, delete = delete,
+                report = report,
+               )}
+</%def>
+
+<%def name="thumbnail()">
+  %if thing.thumbnail and not getattr(thing, "trial_mode", None):
+  <%call expr="make_link('thumbnail', 'thumbnail ' + (thing.thumbnail if thing.thumbnail_sprited else ''))">
+    % if not thing.thumbnail_sprited:
+        <%
+            if hasattr(thing, 'thumbnail_size'):
+                size_str = "width='%d' height='%d'" % (thing.thumbnail_size[0], thing.thumbnail_size[1])
+            else:
+                size_str = ""
+        %>
+        <img src="${s3_https_if_secure(thing.thumbnail)}" ${size_str} alt=""/>
+    % endif
+  </%call>
+  %endif
+</%def>
+

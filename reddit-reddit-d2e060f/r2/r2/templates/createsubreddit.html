@@ -1,0 +1,381 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.filters import keep_space
+   from r2.lib.pages import UserText
+%>
+<%namespace file="utils.html" import="error_field, language_tool, plain_link"/>
+<%namespace file="utils.html" import="image_upload"/>
+<%namespace file="printablebuttons.html" import="toggle_button, simple_button" />
+
+<%namespace name="utils" file="utils.html"/>
+ 
+<div class="create-reddit fancy-settings thing"
+     %if thing.site:
+       id="${thing.site._fullname}"
+     %endif
+     >
+
+<div class="pretty-form" id="sr-form">
+
+%if not thing.site:
+    <%utils:line_field title="${_('name')}"
+                        description='${_("no spaces, e.g., slashdot")}'>
+     <input type="text" name="name" id="name" class="text"
+            value="${thing.name}"
+            onchange="update_title(this)"/>
+      %if not thing.site:
+        ${error_field("SUBREDDIT_EXISTS", "name")}
+        ${error_field("BAD_SR_NAME", "name")}
+      %endif
+    </%utils:line_field>
+%else:
+  <input type="hidden" name="sr" id="name" value="${thing.site._fullname}"/>
+%endif
+
+  <%utils:line_field title="${_('title')}"
+       description='${_("e.g., slashdot: news for nerds, stuff that matters")}'>
+    %if thing.site:
+      <input id="title" type="text" name="title" class="text"
+             value="${thing.site.title}"/>
+    %else:
+      <input id="title" type="text" name="title" class="text" />
+    %endif
+    ${error_field("NO_TEXT", "title")}
+    ${error_field("TOO_LONG", "title")}
+  </%utils:line_field>
+
+  <%utils:line_field title="${_('description')}" css_class="usertext"
+                     description="${_('publicly describe your subreddit for all to see. 500 characters max.')}">
+    %if thing.site and thing.site.public_description:
+     ${UserText(None, text=thing.site.public_description or "", editable=True, creating=True, name="public_description", have_form=False)}
+    %else:
+     ${UserText(None, text="", creating=True, name="public_description", have_form=False)}
+    %endif
+    <div id="public_description_conflict_box" style="display: none">
+        <div id="public_description_conflict_diff"></div>
+        ${UserText(None, text="", editable=True, creating=True, name="public_description_conflict_old", have_form=False)}
+    </div>
+    ${error_field("CONFLICT", "public_description")}
+  </%utils:line_field>
+
+  <%utils:line_field title="${_('sidebar')}" css_class="usertext"
+                     description="${_('shown in the sidebar of your subreddit. 5120 characters max.')}">
+    %if thing.site and thing.site.description:
+     ${UserText(None, text=thing.site.description or "", editable=True, creating=True, name="description", have_form=False)}
+    %else:
+     ${UserText(None, text="", creating=True, name="description", have_form=False)}
+    %endif
+    <div id="description_conflict_box" style="display: none">
+        <div id="description_conflict_diff"></div>
+        ${UserText(None, text="", editable=True, creating=True, name="description_conflict_old", have_form=False)}
+    </div>
+    ${error_field("CONFLICT", "description")}
+  </%utils:line_field>
+  
+  
+  %if thing.site:
+        <input type="hidden" name="prev_public_description_id" value="${thing.site.prev_public_description_id}"/>
+        <input type="hidden" name="prev_description_id" value="${thing.site.prev_description_id}"/>
+        ${error_field("TOO_LONG", "prev_public_description_id")}
+        ${error_field("TOO_LONG", "prev_description_id")}
+        ${error_field("BAD_REVISION", "prev_public_description_id")}
+        ${error_field("BAD_REVISION", "prev_description_id")}
+  %endif
+
+  <%utils:line_field title="${_('language')}">
+    <div class="delete-field">
+      <%
+         default_lang = thing.site and thing.site.lang or c.lang or ''
+         default_lang = default_lang.split('-')[0]
+         default_lang = g.lang if len(default_lang) != 2 else default_lang
+       %>
+      ${language_tool(all_langs = True, default_lang = default_lang)}
+    </div>
+  </%utils:line_field>
+
+  <%utils:line_field title="${_('type')}">
+    <div class="delete-field">
+      <table>
+      ${utils.radio_type('type', "public", _("public"),
+                         _("anyone can view and submit"),
+                         (not thing.site or thing.site.type=='public'))}
+      ${utils.radio_type('type', "restricted", _("restricted"),
+                         _("anyone can view, but only some are approved to submit links"),
+                         (thing.site and thing.site.type=='restricted'))}
+      ${utils.radio_type('type', "private", _("private"),
+                         _("only approved members can view and submit"),
+                         (thing.site and thing.site.type=='private'))}
+
+      <% is_archived = thing.site and thing.site.type == 'archived' %>
+      %if c.user_is_admin or is_archived:
+        ${utils.radio_type('type', "archived", _("archived"),
+                           _("anyone can view, but submissions are no longer accepted"),
+                           is_archived)}
+      %endif
+      </table>
+      ${error_field("INVALID_OPTION", "type")}
+    </div>
+  </%utils:line_field>
+
+  <%utils:line_field title="${_('content options')}">
+    <div class="delete-field">
+      <table>
+        ${utils.radio_type('link_type', "any", _("any"),
+                           _("any link type is allowed"),
+                           (not thing.site or thing.site.link_type=='any'))}
+        ${utils.radio_type('link_type', "link", _("links only"),
+                           _("only links to external sites are allowed"),
+                           (thing.site and thing.site.link_type=='link'))}
+        ${utils.radio_type('link_type', "self", _("text posts only"),
+                           _("only text/self posts are allowed"),
+                           (thing.site and thing.site.link_type=='self'))}
+      </table>
+      ${error_field("INVALID_OPTION", "link_type")}
+    </div>
+  </%utils:line_field>
+  <%utils:line_field title="${_('wiki')}">
+    <div class="delete-field">
+      <table>
+        ${utils.radio_type('wikimode', "disabled", _("disabled"),
+                           _("Wiki is disabled for all users except mods"),
+                           (not thing.site or thing.site.wikimode == 'disabled'))}
+        ${utils.radio_type('wikimode', "modonly", _("mod editing"),
+                           _("Only mods or those on a pages edit list may edit"),
+                           (thing.site and thing.site.wikimode == 'modonly'))}
+        ${utils.radio_type('wikimode', "anyone", _("anyone"),
+                           _("Anyone who can submit to the subreddit may edit"),
+                           (thing.site and thing.site.wikimode == 'anyone'))}
+      </table>
+      ${error_field("INVALID_OPTION", "wikimode")}
+    </div>
+    <div class="usertext-edit">
+    <div class="delete-field">
+    <label for="wiki_edit_karma">${_('Subreddit karma required to edit and create wiki pages:')}</label>
+        %if thing.site:
+            <input id="wiki_edit_karma" type="text" name="wiki_edit_karma" 
+                   value = "${thing.site.wiki_edit_karma}"/>
+        %else:
+            <input id="wiki_edit_karma" type="text" name="wiki_edit_karma" value="100" />
+        %endif
+        ${error_field("BAD_NUMBER", "wiki_edit_karma")}
+    </div>
+    <div class="delete-field">
+    <label for="wiki_edit_age">${_('Account age (days) required to edit and create wiki pages:')}</label>
+        %if thing.site:
+            <input id="wiki_edit_age" type="text" name="wiki_edit_age" 
+                   value = "${thing.site.wiki_edit_age}"/>
+        %else:
+            <input id="wiki_edit_age" type="text" name="wiki_edit_age" value="0" />
+        %endif
+        ${error_field("BAD_NUMBER", "wiki_edit_age")}
+    </div>
+    </div>
+  </%utils:line_field>
+  <%utils:line_field title="${_('other options')}">
+    <div class="delete-field">
+      <ul>
+        <li>
+          <input class="nomargin" type="checkbox" name="over_18" id="over_18"
+                 ${thing.site and thing.site.over_18 and "checked='checked'" or ""}/>
+          <label for="over_18">
+            ${_("viewers must be over eighteen years old")}
+          </label>
+        </li>
+        <li>
+          <input class="nomargin" type="checkbox" 
+                 name="allow_top" id="allow_top"
+                 ${(not thing.site or thing.site.allow_top) and "checked='checked'" or ""}/>
+          <label for="allow_top">
+            ${_("allow this reddit to be shown in the default set")}
+          </label>
+        </li>
+        <li>
+          <input class="nomargin" type="checkbox" 
+                 name="show_media" id="show_media"
+                 ${thing.site and thing.site.show_media and "checked='checked'" or ""}/>
+          <label for="show_media">
+            ${_("show thumbnail images of content")}
+          </label>
+        </li>
+      </ul>
+    </div>
+  </%utils:line_field>
+
+% if thing.site and thing.site.domain != thing.site._defaults['domain']:
+  <%utils:line_field title="${_('domain')}" css_class="usertext">
+    <div class="delete-field">
+      %if thing.site and c.site.domain:
+          <input class="nomargin" type="checkbox" 
+                 name="css_on_cname" id="css_on_cname"
+                 ${thing.site.css_on_cname and "checked='checked'" or ""}/>
+          <label for="css_on_cname">
+            ${_("make custom CSS styles apply only when accessed from the cname.")}
+          </label>
+          <br/>
+          <input class="nomargin" type="checkbox"
+                 name="show_cname_sidebar" id="show_cname_sidebar"
+                 ${thing.site and thing.site.show_cname_sidebar and "checked='checked'" or ""}/>
+          <label for="show_cname_sidebar">
+            ${_("show sidebar when accessed from the cname.")}
+          </label>
+      %endif
+    </div>
+    <div class="usertext-edit">
+      %if thing.site:
+        <input id="domain" type="text" name="domain" class="text"
+               value="${getattr(thing.site, 'domain', None) or ""}"/>
+      %else:
+        <input id="domain" type="text" name="domain" class="text" />
+      %endif
+      <div class="bottom-area">
+        ${toggle_button("help-toggle", _("what's this?"), _("hide help"),
+            "helpon", "helpoff")}
+      </div>
+      <div class="infobar markhelp md" style="display: none">
+        ${_("Own a domain?  Enter it here and then go to your DNS provider and add a CNAME record aliasing your domain to rhs.reddit.com. You will be able to access your reddit through your domain.")}
+      </div>
+    </div>
+  </%utils:line_field>
+% endif
+
+%if thing.site:
+  <input type="hidden" name="sr" value="${thing.site._fullname}"/> 
+    <%utils:line_field title="${_('look and feel')}">
+      <ul class="upload">
+        <li>
+        ${plain_link(_("edit the stylesheet"),
+                      "/about/stylesheet",
+                      _sr_path = True)}
+        &#32;
+        <span class="gray">(${_("leaves this page")})</span>
+        </li>
+        <li>
+          <label for="header-title">header mouseover text:</label>
+          <input type="text" name="header-title" id="header-title"
+                 value="${thing.site.header_title}"
+                 />
+        </li>
+        <li>
+          <%utils:image_upload post_target="/api/upload_sr_img" 
+                               current_image="${thing.site.header}"
+                               label="${_('upload header image')}"
+                               ask_type="${True}">
+            <br/>
+            <button id="delete-img" class="delete-img"
+                    %if not thing.site.header:
+                       style="display: none;"
+                    %endif
+                    onclick="return post_form(this.form, 'delete_sr_header');">
+              ${_('restore default header')}
+            </button>
+            <div class="clearleft"></div>
+            <input type="hidden" name="uh" value="${c.modhash}" />
+            <input type="hidden" name="r"  value="${c.site.name}" />
+            <input type="hidden" name="header" value="1" />
+  
+            <script type="text/javascript">
+              function on_image_success(img) {
+                 $("#header-img").log().attr("src", img.attr("src"));
+              }
+            </script>
+          </%utils:image_upload>
+        </li>
+      </ul>
+    </%utils:line_field>
+
+  %if c.user_is_admin:
+    <%utils:line_field title="${_('sponsorship')}">
+      <ul class="upload">
+        <li>
+          <input type="text" name="sponsorship-text"
+                 value="${thing.site.sponsorship_text}"
+                 />
+        </li>
+        <li>
+          <input type="text" name="sponsorship-name"
+                 %if thing.site.sponsorship_name:
+                     value="${thing.site.sponsorship_name}"
+                 %else:
+                     placeholder="${_('name this campaign (for traffic)')}" 
+                 %endif
+                 />
+        </li>
+        <li>
+          <input type="text" name="sponsorship-url" 
+                 %if thing.site.sponsorship_url:
+                     value="${thing.site.sponsorship_url}"
+                 %else:
+                     placeholder="${_('enter link url here')}"
+                 %endif
+                 />
+        </li>
+        <li>
+          <%utils:image_upload post_target="/api/upload_sr_img" 
+                               current_image="${thing.site.sponsorship_img}"
+                               label="${_('upload sponsorship image')}"
+                               form_id="sponsor-upload",
+                               ask_type="${True}">
+            <br/>
+            <button id="delete-sponsor" class="delete-img"
+                   %if not thing.site.sponsorship_img:
+                      style="display: none;"
+                   %endif
+                   onclick="return post_form(this.form, 'delete_sr_header');">
+              ${_('delete')}
+            </button>
+            
+            <div class="clearleft"></div>
+            <input type="hidden" name="uh" value="${c.modhash}" />
+            <input type="hidden" name="r"  value="${c.site.name}" />
+            <input type="hidden" name="sponsor" value="1" />
+          </%utils:image_upload>
+        </li>
+      </ul>
+    </%utils:line_field>
+
+  %endif
+
+%endif
+
+
+  <div class="save-button">
+  <%
+     if thing.site:
+         name = "edit"
+         text = _("save options")
+     else:
+         name = "create"
+         text = _("create")
+  %>
+  <button name="${name}" class="btn" type="button"
+          onclick="return post_pseudo_form('#sr-form', 'site_admin')">
+    ${text}
+  </button>
+  &#32;
+  <span class="status error"></span>
+  ${error_field("RATELIMIT", "ratelimit")}
+  </div>
+</div>
+</div>
+

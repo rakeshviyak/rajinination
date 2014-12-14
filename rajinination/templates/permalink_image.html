@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="hero-unit nopadding hero-box-shadow">
+		<a class="right carousel-control page-button" href="/i/{{previous}}" alt="Next" title="Next" rel="tooltip" data-placement="bottom">></a>
+		<a class="left carousel-control page-button" href="/i/{{next}}" alt="Previous" title="Previous" rel="tooltip" data-placement="bottom"><</a>
+		{{images.permalinkrender() | safe}}
+		<div class="fb-comments" data-href="http://www.rajinination.com/i/{{images.key.id()}}" data-width="700" data-num-posts="4"></div>
+	</div>
+{% endblock %}

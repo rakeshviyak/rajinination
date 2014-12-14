@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="rows social-container" style="padding:10px 20px">
+	<h3>Upload a funny pic</h3>
+	<hr>
+	<form enctype="multipart/form-data" method="post" style="line-height:30px">
+		<fieldset>
+					
+			<label>Post Title</label>
+			<input type="text" name="content" value="{{content}}" class="span12" style="border-radius:0px;" placeholder="Provide the funny title to the pic">
+			
+			{% if html_class=='Upload_Web' %}
+
+				<label class="margintop20">Add a Picture URL / <a href="/new:P">Upload your File</a> / <a href="/new:P/edit"> Build a cool Pic</a></label>
+				<input type="text" name="weblink" class="span12" value="{{weblink}}" style="border-radius:0px;" placeholder="Pic URL">
+			{% elif html_class=='Upload' %}
+				<label class="margintop20">Upload a pic below / <a href="/new:P/web">Add a Pic URL</a> / <a href="/new:P/edit"> Build a cool Pic</a></label>
+				<div class="boxexample border-radius-zero"><input type="file" name="img"></div>
+							
+			{% endif %}
+			<div class=" muted"><small>JPEG, GIF or PNG. Max size: 2MB</small></div>
+			
+			{% if error %}
+			<div><span class="label label-important">{{error}}</span></div>
+			{% endif %}
+			
+			<hr>
+			<label>Tags</label>
+			<div class="btn-group tag-select" data-toggle="buttons-checkbox">
+				<button id="bottomFunny" class="btn btn-color-hover" type="button" data-name="Funny,1">Funny</button>
+				<button id="bottomRajiniStyle" class="btn btn-color-hover" type="button" data-name="RajiniStyle,1">Rajini Style</button>
+				<button id="bottomWTK" class="btn btn-color-hover" type="button" data-name="WTK,1">WTK</button>
+				<button id="bottomEKSI" class="btn btn-color-hover" type="button" data-name="EKSI,1">EKSI</button>
+				<button id="bottomRage" class="btn btn-color-hover" type="button" data-name="Rage,1">Rage</button>
+				<button id="bottomShit" class="btn btn-color-hover" type="button" data-name="Shit,1">Shit!!</button>
+			</div>
+			
+			<div id="realform"></div>
+			
+			
+			<hr>
+			
+			{% if secret %}
+				<div>Name <input type="text" name="name"></div>
+				<div>Avatar Url <input type ="text" name="avatarurl"></div>
+				<div>Password <input type ="password" name="password"></div>
+			{% endif %}
+			
+			<input type="checkbox" name="postfb" checked> Post to my Facebook (Higher chance to get more votes)
+			
+			{% if not user %}<div class="margintop20">You need to be <a href="#myModal" data-toggle="modal"> Logged in </a> to upload this</div>{% endif %}
+			
+			<div class="margintop20"><button type="submit" class="span3 special-shadow blue {% if not user %}disabled{% endif %}"><i class="icon-upload icon-white"></i> Upload</button></div>
+			
+			
+		</fieldset>
+	</form>
+	
+	</div>
+
+	
+	
+{% endblock %}

@@ -1,0 +1,138 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.filters import edit_comment_filter, unsafe
+   from r2.lib.pages.things import CommentButtons
+   from r2.lib.pages import WrappedUser
+%>
+
+<%namespace file="utils.html" import="plain_link, thing_timestamp, edited" />
+<%inherit file="comment_skeleton.html"/>
+
+#####################
+### specific fill-in functions for comment
+##################
+
+<%def name="thing_data_attributes(what)" buffered="True">
+${parent.thing_data_attributes(what)} data-ups="${what.upvotes}" data-downs="${what.downvotes}"
+</%def>
+
+<%def name="midcol(display=True, cls = '')">
+${parent.midcol(not thing.collapsed, cls = cls)}
+</%def>
+
+<%def name="ParentDiv()">
+  ${parent.ParentDiv()}
+  <a name="${thing._id36}" ></a>
+  %if c.profilepage:
+    %if thing.link: 
+      %if thing.link.title:
+        <a href="${thing.link.url}" class="title"
+           %if thing.nofollow:
+             rel="nofollow"
+           %endif
+           >
+          ${thing.link.title}
+        </a>
+      %else:
+          ${thing.link.url}
+      %endif
+    %endif
+    &#32;
+    ${_("by")}
+    &#32;
+    ${thing.link_author.render()}
+    ${_("in")}
+    &#32;
+    ${plain_link(thing.subreddit.name, thing.subreddit_path, sr_path = False,
+                 cname = False, _class = "subreddit hover")}
+  %endif
+</%def>
+
+<%def name="collapsed()">
+${parent.collapsed()}
+</%def>
+
+<%def name="tagline(collapse=False,showexpandcollapse=True)">
+  <%
+     if c.user_is_admin:
+       show = True
+     else:
+       show = not thing.deleted
+  %>
+  %if showexpandcollapse:
+    <a href="#" class="expand"
+       %if collapse:
+         onclick="return showcomment(this)">
+       %else:
+         onclick="return hidecomment(this)">
+       %endif
+       [${"+" if collapse else unsafe("&ndash;")}]
+    </a>
+  %endif
+
+  %if show:
+     %if thing.deleted:
+       <em>${_("deleted comment from")}</em>&#32;
+     %endif
+     ${WrappedUser(thing.author, thing.attribs, thing,
+                   gray = collapse).render()}
+     &#32;
+  %else:
+     <em>${_("[deleted]")}</em>&#32;
+  %endif
+
+  %if collapse and thing.collapsed and show:
+    ${thing.collapsed_reason}
+  %else:
+    %if show:
+       ${unsafe(self.score(thing, likes = thing.likes))}&#32;
+    %endif
+    ${thing_timestamp(thing, thing.timesince)}&#32;${_("ago")}
+    ${edited(thing, thing.lastedited)}
+  %endif
+  %if collapse:
+    &nbsp;<a href="#" class="expand"
+       onclick="return showcomment(this)">
+       (${thing.num_children} 
+        ${ungettext("child", "children", thing.num_children)})
+    </a>
+  %endif
+</%def>
+
+<%def name="Child()">
+${parent.Child(not thing.collapsed)}
+</%def>
+
+<%def name="commentBody()">
+  ${parent.commentBody()}
+</%def>
+
+<%def name="arrows()">
+  ${parent.midcol()}
+</%def>
+
+<%def name="buttons()">
+  ${CommentButtons(thing)}
+  ${self.admintagline()}
+</%def>

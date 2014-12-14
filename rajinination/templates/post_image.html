@@ -1,0 +1,36 @@
+<div class="special-padding">
+<div class="row-fluid horizontal-line page{{page}}">
+	<div class="span8">
+		<a href="/i/{{i.key.id()}}"><img src="/img?img_id={{i.key.urlsafe()}}" alt="{{i.content}}"></a>
+	</div>
+	<div class="span4">
+		<div><a class="post-title post-title-color special-hover" href ="/i/{{i.key.id()}}" >{{i.content}}</a></div>
+		<div class="verysmall"><a class="muted special-hover" href="/u/{{i.user.id()}}" >{{i.user.get().name}}</a></div>
+		<p>
+			<button class="btn btn-mini disabled" ><i class="icon-thumbs-up" alt="Thumps Up"></i> <small class="votes" id="{{i.key.id()}}">{{votecounter}}</small></button>
+			<a class="btn btn-mini disabled" href="/i/{{i.key.id()}}">
+				<i class="icon-comment"></i>
+				<small> 
+					<fb:comments-count href=http://www.rajinination.com/i/{{i.key.id()}}></fb:comments-count>
+				</small>
+			</a>
+		</p>	
+		
+		<div class="btn-toolbar">
+			<div class="btn-group votepopover" id="vote-color">
+ 				<a class="btn btn-inverse vote down" id="{{i.key.id()}}" name="ThumpsDown"><i class="icon-thumbs-down icon-white" ></i></a>
+				<a class="btn btn-inverse vote up" id="{{i.key.id()}}" name="ThumpsUp"><i class="icon-thumbs-up icon-white"></i></a>
+				
+			</div>
+		</div>
+		<div class="fb-like">
+			<fb:like href="http://www.rajinination.com/i/{{i.key.id()}}" send="false" layout="button_count" width="200" show_faces="false" font="tahoma"></fb:like>
+		</div>
+		<div class="tweet">
+			<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-url="http://rajinination.com/i/{{i.key.id()}}" data-via="rajinination" data-text="{{i.content}}" data-counturl="http://www.rajinination.com/i/{{i.key.id()}}">Tweet</a>
+		</div>
+		
+	</div>
+	
+</div>
+</div>

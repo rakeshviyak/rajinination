@@ -1,0 +1,30 @@
+<div class="navbar navbar-inverse navbar-fixed-top" id="top-bar">
+	<div class="navbar-inner" >
+		<div class="container">
+			<a class="brand" href="/">RAJINI NATION</a>
+			<ul class="nav top-bar" id="menu1" >
+				<li class="{% if html_class == 'Hot' %} active {% endif %}" ><a href="/hot">Hot</a></li>
+				<li class="{% if html_class == 'New' %} active {% endif %}"><a href="/new">New</a></li>
+				<li class="{% if html_class == 'Upload' %} active {% endif %}"><a href="#uploadModal" role="button" data-toggle="modal">Upload</a></li>
+				<li class="{% if html_class == 'Random' %} active {% endif %}"><a href="/i">Random</a></li>
+			</ul>
+			<ul class="nav pull-right top-bar" id="menu2">
+				{% if user %}
+
+					<li class="dropdown{% if html_class == 'Profile' %} active {% endif %}"><a id="drop1" class="dropdown-toggle" role="button" href="/profile">{{user.name}} <b class="caret"></b></a>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+							<li><a tabindex="-1" href="/u/{{user.key.id()}}">{{user.name}}</a></li>
+							<li class="divider"></li>
+							<li><a tabindex="-1" href="/logout">Logout</a></li>                    
+						
+						</ul>
+					</li>
+					
+				{% else %}
+					<li class="{% if html_class == 'Login' %} active {% endif %}"><a href="#myModal" role="button" data-toggle="modal">Login</a></li>
+					<!--<li class="{% if html_class == 'Login' %} active {% endif %}"><a href="/login">Login</a></li>-->
+				{% endif %}		
+			</ul>
+		</div>
+	</div>
+</div>

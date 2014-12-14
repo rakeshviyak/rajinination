@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+	{% block content %}
+	
+	<form method="post">
+      <table>
+        <tr>
+          <td class="label">
+           img_id
+          </td>
+          <td>
+            <input type="text" name="img_id">
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Password
+          </td>
+          <td>
+            <input type="password" name="password" value="">
+          </td>
+        </tr>
+      </table>
+		<input type="submit">
+    </form>
+	
+	{% endblock %}

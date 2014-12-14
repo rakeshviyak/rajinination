@@ -1,0 +1,12 @@
+<div class="row-fluid btmargin10 thumpnailside" id="{{i.key.id()}}">
+	<div><a class="post-title" href ="/i/{{i.key.id()}}">{{i.content}}</a></div>
+	<div class="span8">
+		<a href="/i/{{i.key.id()}}"><img src="/img?img_id={{i.key.urlsafe()}}"></img></a>
+	</div>
+	<div class="span3 pull-right">
+		<br>
+		<div><i class="icon-thumbs-up"></i> <small class="votes" id="{{i.key.id()}}">{{votecounter}}</small></div>
+		<div><i class="icon-comment"></i> <small><fb:comments-count href=http://www.rajinination.com/i/{{i.key.id()}}></fb:comments-count></small></div>
+	</div>
+	
+</div>

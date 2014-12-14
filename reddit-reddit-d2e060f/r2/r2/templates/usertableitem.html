@@ -1,0 +1,79 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%namespace file="printablebuttons.html" import="ynbutton" />
+<%namespace file="utils.html" import="plain_link"/>
+
+<%!
+   from r2.lib.utils import timesince
+%>
+
+<tr>
+  %for cell in thing.cells:
+    <td>
+      <%
+        thing.name = cell
+       %>
+      ${cell_type()}
+    </td>
+  %endfor
+</tr>
+
+<%def name="cell_type()">
+  %if thing.name == "user":
+      <span class="user">
+         ${plain_link(thing.user.name, "/user/%s/" % thing.user.name,
+                      _sr_path=False)}
+         &nbsp;(<b>${thing.user.safe_karma}</b>)
+      </span>
+      &nbsp;
+  %elif c.user_is_loggedin and thing.name == "sendmessage" and c.user != thing.user:
+    ${plain_link(_("send message"),
+                 "/message/compose?to=%s" % (thing.user.name))}
+      &nbsp;
+  %elif thing.name == "remove":
+    %if thing.editable:
+      ${ynbutton(_("remove"), "removed", thing.remove_action,
+                 callback="deleteRow",
+                 hidden_data = dict(type = thing.type,
+                                    id = thing.user._fullname,
+                                    container = thing.container_name))}
+    %else:
+      <span class="gray">${_("can't remove")}</span>
+    %endif
+  %elif thing.name == "note":
+    <form action="/post/friendnote" id="friendnote-${thing.rel._fullname}"
+          method="post" class="pretty-form medium-text friend-note"
+          onsubmit="return post_form(this, 'friendnote');">
+      <input type="hidden" name="name" value="${thing.user.name}" />
+      <input type="text" maxlength="300" name="note" class="tiny"
+             onfocus="$(this).parent().addClass('edited')"
+             value="${getattr(thing.rel, 'note', '')}" />
+      <button onclick="$(this).parent().removeClass('edited')" type="submit">submit</button>
+      <span class="status"></span>
+    </form>
+  %elif thing.name == "age":
+      <span title="${thing.rel._date.strftime('%Y-%m-%d %H:%M:%S')}">
+        ${timesince(thing.rel._date)}
+      </span>
+  %endif
+</%def>

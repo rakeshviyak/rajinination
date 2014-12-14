@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>this is you</h2>
+  <div class="media">
+    <div class="img avatar">
+	{% if user.avatar_url%}
+      <a href="/profile"><img src="{{ user.avatar_url }}"></a>
+	{%else%}
+	  <a href="/profile"><img src="/img/missing-avatar.png" alt="missing avatar"></a>	
+	{%endif%}
+    </div>
+    <div class="body">
+      <h1 style="margin-top: 0; padding-top: 0">{{ user.name }}</h1>
+      <p><a href="{{ user.link }}" target="_blank" rel="nofollow">{{ user.link }}</a></p>
+    </div>
+  </div>
+
+
+  <!--<h2>webapp2 auth session</h2>
+  <table>
+    <tbody>
+      {% for k, v in session.items() -%}
+        <tr>
+          <td style="padding-right: 5px">{{ k }}:</td>
+          <td>{{ v }}</td>
+        </tr>
+      {% endfor -%}
+    </tbody>
+  </table>
+  -->
+  <p style="margin-top: 2em;">
+    <a href="/logout" class="btn">logout</a>
+  </p>
+{% endblock %}

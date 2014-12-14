@@ -1,0 +1,51 @@
+<div id="side-bar">
+	{% if not user %}
+		<div class="side-login-padding">
+			<a href="#myModal" class="btn-block special-shadow" data-toggle="modal">Y No Sign Up ?</a>
+		
+		</div>
+	{% endif %}	
+	<div class="social-container side-login-padding">
+		<h6>Show you love to Rajini Nation</h6>
+		<div class="fb-like">
+			<fb:like href="http://www.rajinination.com/" send="false" width="185" show_faces="true"></fb:like>
+		</div>
+		<div class="twitter-like">
+			<a href="https://twitter.com/RajiniNation" class="twitter-follow-button" data-show-count="true" data-lang="en">Follow @RajiniNation</a>
+		</div>
+		<div class="google-like">
+			<div class="g-plusone" data-href="http://www.rajinination.com/"></div>
+		</div>
+	</div>
+	
+	<div class="side-login side-login-padding">
+		<a href="/new:P/edit" class="btn-block special-shadow blue" rel="tooltip" title="Add a cool Caption to a pic"><img src="/static/img/caption.png" style="max-width:50px;"></img> Make people laugh !! </a>
+	</div>
+	{% if html_class=="Per" %}
+		<div>
+			<h6> Most Popular </h6> 
+			<!--<a href="/sideimageprev"> Prev</a>
+			<a class="sidepagenext" title="Next" id="1"> Next</a>-->
+			{% for p in popular %}
+				{{ p.imageid.get().thumbnailrender() | safe }}
+			
+			{% endfor %}
+		</div>
+		
+		<div>
+			<h6>Popular Tags</h6>
+			<a href="/tag?t=Funny"><span class="label label-info">Funny</span></a>
+			<a href="/tag?t=RajiniStyle"><span class="label label-success">  Rajini Style</span> </a>
+			<a href="/tag?t=WTK"><span class="label">  WTK</span> </a>
+			<a href="/tag?t=EKSI"><span class="label label-important">  EKSI</span> </a>
+			<a href="/tag?t=Rage"><span class="label label-inverse">  RageComics</span> </a> 
+			<a href="/tag?t=Shit"><span class="label label-warning">  Shit!!</span> </a>
+		</div>
+		
+	{% endif %}
+</div>	
+
+
+{% include 'footer.html' %}
+
+

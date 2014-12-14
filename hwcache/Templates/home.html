@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>First Blog</title>
+	</head>
+	
+	<body>
+		<a href='/blog'><h1>My First Blog</h1></a>
+		<hr>
+		{% for blog in blogs %}
+		<div class="blog">
+			<div class="blog-title">{{blog.title}}</div>
+			<pre class="blog-body">{{blog.blog}}</pre>
+		</div>
+		<hr>
+		{% endfor %}
+		<br><br><br>
+		<div class="query">Queried {{query}} sec ago</div>
+	</body>
+
+</html>

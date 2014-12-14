@@ -1,0 +1,16 @@
+fd = urllib.urlopen('http://echealthinsurance.com/wp-content/uploads/2009/11/minnesota.jpg')
+image_file = io.BytesIO(fd.read())
+im = Image.open(image_file)
+draw=ImageDraw.Draw(im)
+im.save('ex13.jpg')
+i_width,i_height=im.size
+draw=ImageDraw.Draw(im)
+font = ImageFont.truetype('arial.ttf',25)
+lines = textwrap.wrap("This is text to print on the image. Come on  bitch !! ", width = i_width)
+y_text=10
+for line in lines:
+	width, height = font.getsize(line)
+	draw.text(((i_width - width)/2, y_text), line, font = font)
+	y_text += height
+draw=ImageDraw.Draw(im)
+im.save('ex14.jpg')

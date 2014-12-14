@@ -1,0 +1,210 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+    import re
+    from r2.lib.filters import safemarkdown
+    from r2.controllers.api_docs import section_info
+    from r2.models.token import OAuth2Scope
+%>
+
+<%def name="api_method_id(uri, method)">${method}_${uri.replace('/', '_').strip('_')}</%def>
+<%def name="api_uri(uri)">${unsafe(re.sub(r'{(\w+)}', r'<em class="placeholder">\1</em>', uri))}</%def>
+
+<%def name="mode_selector(current_mode)">
+  <span class="mode-selector">
+    <a class="mode ${'mode-current' if current_mode == 'section' else ''}"
+       href="/dev/api">by section</a>
+    <a class="mode ${'mode-current' if current_mode == 'oauth' else ''}"
+       href="/dev/api/oauth">by oauth scope</a>
+  </span>
+</%def>
+
+<%def name="api_method_toc(api)">
+  <strong>API methods</strong>
+  ${mode_selector('section')}
+  <ul>
+  %for section in sorted(api):
+    <li>
+      <a href="#section_${section}" class="section">${section_info[section]['title']}</a>
+      <ul>
+        %for uri in sorted(api[section]):
+          <%
+             methods = sorted(api[section][uri].keys())
+             has_oauth = any(api[section][uri][method]['oauth_scopes']
+                             for method in methods)
+          %>
+          <li class="${'supports-oauth' if has_oauth else ''}">
+            <a href="#${api_method_id(uri, methods[0])}">${api_uri(uri)}</a>
+          </li>
+        %endfor
+      </ul>
+    </li>
+  %endfor
+  </ul>
+</%def>
+
+<%def name="oauth_toc(api, oauth_index)">
+  <strong>API methods</strong>
+  ${mode_selector('oauth')}
+  <ul>
+  %for scope, keys in sorted(oauth_index.iteritems()):
+    <li>
+      <a href="#scope_${scope}" class="section">${scope}</a>
+      <ul>
+        %for section, uri, method in sorted(keys):
+          <li>
+            <a href="#${api_method_id(uri, method)}">${api_uri(uri)}</a>
+          </li>
+        %endfor
+      </ul>
+    </li>
+  %endfor
+  </ul>
+</%def>
+
+<%def name="section_header(section)">
+  <h2 id="section_${section}">${section_info[section]['title']}</h2>
+  %if 'description' in section_info[section]:
+    <div class="description">
+      ${unsafe(safemarkdown(section_info[section]['description']))}
+    </div>
+  %endif
+</%def>
+
+<%def name="scope_header(scope)">
+  <h2 id="scope_${scope}">
+    ${OAuth2Scope.scope_info[scope]['name']}
+    <span class="scope-id">${scope}</span>
+  </h2>
+  <div class="description">
+    ${unsafe(safemarkdown(OAuth2Scope.scope_info[scope]['description']))}
+  </div>
+</%def>
+
+<%
+  api = thing.api_docs
+%>
+
+<div class="sidebar">
+  <div class="head"></div>
+  <div class="toc">
+    <ul>
+      <li>
+        %if thing.mode == "oauth":
+          ${oauth_toc(thing.api_docs, thing.oauth_index)}
+        %else:
+          ${api_method_toc(thing.api_docs)}
+        %endif
+      </li>
+    </ul>
+  </div>
+  <div class="feet"></div>
+</div>
+
+<div class="contents">
+  <div class="section introduction">
+    <p>This is automatically-generated documentation for the reddit API.</p>
+    <p>The reddit API and code are&#32;<a href="/code">open source</a>. Found a mistake or interested in helping us improve? Have a gander at&#32;<a href="https://github.com/reddit/reddit/blob/master/r2/r2/controllers/api.py">api.py</a>&#32;and send us a pull request.</p>
+    <p><strong>Please take care to respect our&#32;<a href="https://github.com/reddit/reddit/wiki/API">API access rules</a>.</strong></p>
+  </div>
+
+  <div class="section methods">
+    %for section in sorted(api):
+      %if thing.mode == 'oauth':
+        ${scope_header(section)}
+      %else:
+        ${section_header(section)}
+      %endif
+      %for uri in sorted(api[section]):
+        %for method in sorted(api[section][uri]):
+          <%
+            docs = api[section][uri][method]
+            # skip uri variants in the index
+            if docs['uri'] != uri:
+              continue
+
+            extends = docs.get('extends')
+          %>
+          <div class="endpoint" id="${api_method_id(uri, method)}">
+            <div class="links">
+              %if docs.get('lineno') and docs.get('relfilepath'):
+                <a href="https://github.com/reddit/reddit/blob/master/r2/r2/${docs['relfilepath']}#L${docs['lineno']}">view code</a>
+              %endif
+              <a href="#${api_method_id(uri, method)}">#</a>
+            </div>
+            <h3>
+              <span class="method">${method}&nbsp;</span>
+              ${api_uri(uri)}
+              %if 'extensions' in docs:
+                <span class="extensions">
+                  [ ${' | '.join('.'+extension for extension in docs['extensions'])} ]
+                </span>
+              %endif
+              %if docs['oauth_scopes']:
+                <span class="oauth-scope-list">
+                  %for scope in docs['oauth_scopes']:
+                    <span class="oauth-scope">${scope}</span>
+                  %endfor
+                </span>
+              %endif
+            </h3>
+            %if 'uri_variants' in docs:
+              <ul class="uri-variants">
+                %for variant in docs['uri_variants']:
+                <li id="${api_method_id(variant, method)}">&rarr; ${api_uri(variant)}</li>
+                %endfor
+              </ul>
+            %endif
+            <div class="info">
+              ${unsafe(safemarkdown(docs.get('doc')))}
+              <%
+                params = docs.get('parameters')
+                base_params = extends.get('parameters') if extends else None
+              %>
+              %if params or base_params:
+                <table class="parameters">
+                %if params:
+                  %for param in sorted(params):
+                    <tr>
+                      <td class="name">${param}</td>
+                      <td class="desc">${params[param]}</td>
+                    </tr>
+                  %endfor
+                %endif
+                %if base_params:
+                  %for param in sorted(base_params):
+                    <tr class="base-param">
+                      <td class="name">${param}</td>
+                      <td class="desc">${base_params[param]}</td>
+                    </tr>
+                  %endfor
+                %endif
+                </table>
+              %endif
+            </div>
+          </div>
+        %endfor
+      %endfor
+    %endfor
+  </div>
+</div>

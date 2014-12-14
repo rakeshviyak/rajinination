@@ -1,0 +1,101 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<!doctype html>
+<%!
+   from r2.lib.template_helpers import static
+   from r2.models import Link, Comment, Subreddit
+   from r2.lib.tracking import UserInfo
+%>
+<%namespace file="utils.html" import="js_setup, googleanalytics"/>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${c.lang}" 
+      xml:lang="${c.lang}" ${c.lang_rtl and unsafe('dir="rtl"') or ''}>
+  <head>
+    <title>${self.Title()}</title>
+    <meta name="keywords" content="${self.keywords()}" />
+    <meta name="description" content="${getattr(thing, 'short_description', None) or g.short_description}" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=1024" />
+    ${self.robots()}
+    ${self.pagemeta()}
+    ${self.stylesheet()}
+    ${self.javascript()}
+    ${js_setup()}
+
+    ##things here may depend on globals, or included js, so we run them last
+    <script type="text/javascript">
+      ${self.javascript_run()}
+    </script>
+    <style type="text/css">
+      ${unsafe(_("/* Custom css: use this block to insert special translation-dependent css in the page header */"))}
+    </style>
+
+    ${self.head()}
+  </head>
+
+  ${self.bodyHTML()}
+</html>
+
+<%def name="bodyHTML()">
+</%def>
+
+<%def name="Title()">
+${c.site.title}
+</%def>
+
+<%def name="keywords()">
+reddit, reddit.com, vote, comment, submit
+</%def>
+
+<%def name="robots()">
+   %if hasattr(thing, 'robots') and thing.robots:
+     <meta name="robots" content="${thing.robots}" />
+   %endif
+</%def>
+
+<%def name="javascript_run()">
+</%def>
+
+<%def name="head()">
+%if g.tracker_url and thing.site_tracking and not c.secure:
+<script type="text/javascript">
+    (function() {
+        var url = '${UserInfo.gen_url()}';
+        var cachebuster = Math.round(Math.random() * 2147483647);
+        var cachebusted_url = url + "&r=" + cachebuster;
+        var img = new Image();
+        img.src = cachebusted_url;
+    })();
+</script>
+%endif
+
+${googleanalytics('web')}
+</%def>
+
+<%def name="pagemeta()">
+</%def>
+
+<%def name="stylesheet()">
+</%def>
+
+<%def name="javascript()">
+</%def>

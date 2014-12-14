@@ -1,0 +1,15 @@
+{% if pager %}
+
+<ul class="pager" style="margin:0px;">
+  <li class="previous {% if not pager.has_prev %}disabled{% endif%}">
+    <a href="{{url_for_other_page}}?p={{(pager.prev_page) }}">&larr; Previous</a>
+  </li>
+  <li class="next {% if not pager.has_next %}disabled{% endif%}">
+    <a href="{{ url_for_other_page}}?p={{(pager.next_page) }}">Next &rarr;</a>
+  </li>
+</ul>
+{% else %}
+	<div class="row-fluid">
+		<div class="span12 label label-important" style="text-align: center;line-height:25px;">No more posts to show</div>
+	</div>
+{% endif %}

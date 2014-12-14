@@ -1,0 +1,5 @@
+<div id="{{page}}">	
+  {% for i in images %}
+	{{ i.render() | safe }}
+  {% endfor %}
+</div>

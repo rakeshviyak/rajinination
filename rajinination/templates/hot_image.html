@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+	{% block content %}
+	
+	<div class="hero-unit nopadding hero-box-shadow">
+		<div id="{% if html_class=="Hot" %}refreshhot{% elif html_class=="New" %}refreshnew{% elif html_class=="Tag" %}refreshtag{% endif %}" value={{title}}>
+		{% if html_class=="Hot" or html_class=="Tag" %}
+			{% include 'hot.html' %}
+		{% elif images %}
+			{% include 'front_image.html' %}
+		{% endif %}
+		</div>
+	
+	<div class="special-padding pager-padding">
+	{% if pager.has_next %}
+		<div id="LoaddingComment">
+			<div class="muted"><small>&nbsp;Loading... </small></div>
+			<div class="progress progress-striped active">
+				<div class="bar" style="width: 40%;"></div>
+			</div>
+		</div>
+	{% endif %}
+		<div class="{% if pager.has_next %}hide{% endif %}" id="endofpage" value="page1">
+			<div class="row-fluid">
+				<div class="span12 label label-important" style="text-align: center;line-height:25px;">No more posts to show</div>
+			</div>
+		</div>
+	
+	</div>
+		
+	 </div>
+	{% endblock %}

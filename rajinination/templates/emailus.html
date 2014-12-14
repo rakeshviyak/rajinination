@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="rows social-container" style="padding:10px 20px">
+	<h3>Email Us</h3>
+	<hr>
+	<form enctype="multipart/form-data" method="post">
+		<fieldset  style="line-height:30px">
+			<label>Your Name <span class="muted">(required)</span></label>
+			<input type="text" class="span12" style="border-radius:0px;{% if Error_Name %}border-color:red{% endif %}" name="name" value="{{name}}" placeholder="">
+			<div class="error-color">{{Error_Name}}</div>
+			<label class="margintop20">Your email address <span class="muted">(optional)</span></label>
+			<input type="text" class="span12" name="email" value="{{email}}" placeholder="" style="border-radius:0px">
+			<label class="margintop20">Subject <span class="muted">(required)</span></label>
+			<input type="text" class="span12" name="subject" value="{{subject}}" placeholder="" style="border-radius:0px;{% if Error_Subject %}border-color:red{% endif %}">
+			<div class="error-color">{{Error_Subject}}</div>
+			<label class="margintop20">Message <span class="muted">(required)</span></label>
+			<textarea class="span12 border-radius-zero" rows="6" name="message" style="{% if Error_Message %}border-color:red{% endif %}">{{message}}</textarea>
+			<div class="error-color">{{Error_Message}}</div>
+			<label class="margintop20">File Attachment <span class="muted">(optional)</span></label>
+			<input type="file" name="attachment" style="margin-bottom:20px;">
+			<div class="error-color">{{Error_Mail}}</div>
+			<div class="margintop20"><button type="submit" class="span3 special-shadow blue"> Send Email </button></div>
+		</fieldset>
+	</form>
+	</div>
+{% endblock %}

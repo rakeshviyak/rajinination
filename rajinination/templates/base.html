@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+	<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="/static/extra.css" rel="stylesheet" type="text/css">
+	{% block title %}
+		{% if title %}
+			<title>Rajini Nation - {{title}} </title>
+		{% else %}
+			<title>Rajini Nation - The Fun </title>
+		{% endif %}
+		{% if description %}
+			<meta name="description" content="Rajini Nation is the platform to share and have fun. {{description}}"/>
+		{% else %}
+			<meta name="description" content="Rajini Nation is the platform to share and have fun. Has user-generated images. Votes promote image stories to the front page. !"/>
+		{% endif %}
+	{% endblock %}
+	<meta name="keywords" content="rajini nation,jokes,interesting,cool,funny picture,rajini style,admire,fun,comedy pic, humor,humour,rajini,india,superstar"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="/static/js/vote.js"></script>
+	<script type='text/javascript' src="/static/bootstrap/js/bootstrap.min.js"></script>
+	
+    <meta name="google-site-verification" content="M3-4zWh_lcuB6WmG5Rmwe0yK197S55HAM373DjRQ7EU" />
+	{% include 'metascripts.html' %}
+	{% include 'googleanalyticsscript.html' %}
+</head>
+
+<body>
+	
+	{% include 'socialscript.html' %}
+	{% include 'top_bar.html' %}
+	{% include 'Login-modal.html' %}
+	<div class="container">
+		{% include 'notification.html' %}
+		{% if fullwidth %}
+			{% block full %}{% endblock %}
+		{% endif %}
+		{% if not fullwidth %}
+		<div class="row-fluid">
+			<div class="span9" id="left-bar">{% block content %}{% endblock %}</div>
+			<div class="span3 side-bar" id="right-bar">{% include 'side_bar.html' %}</div>
+		</div>
+		{% endif %}
+    </div>
+
+	
+</body>
+
+</html>
+
+<!--Changes to boot strap css:
+body{
+padding :60 px;
+}
+
+hero-unit
+padding: 40px 15px;
+
+
+a:hover
+{text-decration:none;
+}
+
+
+-->

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="\static\bootstrap\css\bootstrap.min.css" />
+
+  <title>RajiniNation</title>
+</head>
+
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="/">
+        RanijiNation
+      </a>
+      <ul class="nav">
+        <li class="active">
+          <a href="/">New</a>
+        </li>
+        <li class="{% if html_class == 'extras' %} active {% endif %}">
+          <a href="/">Hot</a>
+        </li>
+        <li class="{% if html_class == 'chat' %} active {% endif %}">
+          <a href="/new">Upload</a>
+        </li>
+      </ul>
+      <ul class="nav pull-right">
+        {% if user %}
+          <li class="{% if html_class == 'admin-config' %} active {% endif %}">
+              <a href="#">{{user.name}}</a>
+          <li class="{% if html_class == 'admin-config' %} active {% endif %}">
+              <a href="/logout">Logout</a>
+        {% else %}
+          <li class="{% if html_class == 'admin-config' %} active {% endif %}">
+              <a href="/Login">Login</a>
+        {% endif %} 
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>
+

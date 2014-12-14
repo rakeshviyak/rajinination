@@ -1,0 +1,78 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.filters import safemarkdown
+%>
+<%namespace file="utils.html" import="error_field"/>
+<%namespace name="utils" file="utils.html"/>
+
+<h1>${_("delete your reddit account")}</h1>
+
+<form action="/post/delete" method="post"
+  onsubmit="${"return post_form(this, 'delete_user', function(x) {return '%s'})" % _("deleting...")}" id="pref-delete">
+
+<div class="spacer">
+  <%utils:round_field title="${_('sorry to see you go!')}">
+    <div class="rounded white-field">
+      ${unsafe(safemarkdown(_(
+        " * if you're having a problem on reddit, please consider [contacting us](/feedback) about it before deleting your account.\n"
+        " * deleting your account will not delete the content of posts and comments you've made on reddit. to do so, please delete them individually."
+      )))}
+    </div>
+  </%utils:round_field>
+</div>
+
+<div class="spacer">
+  <%utils:round_field title="${_('why are you deleting this account?')}" description="(${_('optional')})">
+    <textarea name="delete_message" id="delete-message"></textarea>
+    ${error_field("TOO_LONG", "delete_message")}
+  </%utils:round_field>
+</div>
+
+<div class="spacer">
+  <%utils:round_field title="${_('account credentials')}" description="(${_('for security purposes')})" css_class="credentials">
+    <label for="delete-password">${_("username")}</label>
+    ${error_field("NOT_USER", "user")}
+    <input name="user" id="delete_user" type="text" />
+    <label for="delete-password">${_("password")}</label>
+    ${error_field("WRONG_PASSWORD", "passwd")}
+    <input name="passwd" id="delete_password" type="password" />
+  </%utils:round_field>
+</div>  
+
+<div class="spacer">
+  <%utils:round_field title="${_('confirmation')}">
+    <div class="rounded white-field">
+      <input name="confirm" id="confirm-delete" type="checkbox"/>
+      <label for="confirm-delete">${_("I understand that deleted accounts are not recoverable.")}</label>
+    </div>
+    ${error_field("CONFIRM", "confirm")}
+  </%utils:round_field>
+</div>
+
+<div class="spacer">
+  <button type="submit" class="btn">${_("delete account")}</button>
+  <span class="status"></span>
+  ${error_field("RATELIMIT", "vdelay")}
+</div>
+</form>

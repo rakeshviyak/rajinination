@@ -1,0 +1,222 @@
+body {
+    position: relative;
+	
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+
+    min-width: 800px;
+    margin: 0 auto;
+    padding: 0px;
+    color: #333;
+}
+
+.loginwarning { font-weight: bold; background: yellow; display: none; padding-left: 2em; }
+.voteup, .votedown {
+  vertical-align: middle;
+  cursor: pointer }
+
+.login-area {
+    font-size: 13px;
+    color: gray;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.login-link {
+    color: gray;
+    text-decoration: none;
+}
+.post-link {
+    text-decoration: none;
+}
+.login-link:visited {
+    color: gray;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.error {
+    color: red;
+}
+
+label {
+  display: block;
+  font-size: 20px;
+}
+
+label + label {
+    margin-top: 20px;
+}
+
+input[type=text] {
+    width: 500px;
+    font-size: 20px;
+    padding: 2px;
+    font-family: monospace;
+}
+
+textarea {
+  width: 500px;
+  height: 400px;
+  font-size: 17px;
+  font-family: monospace;
+}
+
+input[type=submit] {
+  font-size: 24px;
+}
+
+input[type=file] {
+  font-size: 24px;
+}
+
+.main-title {
+    display: block;
+    color: #222;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    text-decoration: none;
+}
+
+.post{
+	width:800px;
+	padding:0;
+	margin:0 auto;
+}
+.post + .post {
+    margin-top: 15px;
+}
+
+.post-heading {
+    position: relative;
+    border-bottom: 3px solid #666;
+}
+
+.post-title {
+    font-size: 24px;
+    font-weight: bold;
+	text-decoration: none;
+	color: #333;
+}
+
+.post-date {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    color: #999;
+
+}
+
+.post-content {
+    margin-top: 5px;
+}
+
+#menu {
+				font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+				width:100%;
+				margin: 0 0 0 0;
+				padding: 0 0 0 0px;
+				list-style-type: none;
+				font-size: 16px;
+				height:56px;
+				letter-spacing: .8px;
+				border-bottom: 1px solid #000;
+				/*border-top: 2px solid #2D2D2D;
+				border-left: 2px solid #2D2D2D;
+				
+				border-right: 2px solid #000;
+				background: #3f4247; *//* Old browsers */
+				background: -moz-linear-gradient(top,  #3f4247 0%, #000000 100%); /* FF3.6+ */
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3f4247), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+				background: -webkit-linear-gradient(top,  #3f4247 0%,#000000 100%); /* Chrome10+,Safari5.1+ */
+				background: -o-linear-gradient(top,  #3f4247 0%,#000000 100%); /* Opera 11.10+ */
+				background: -ms-linear-gradient(top,  #3f4247 0%,#000000 100%); /* IE10+ */
+				background: linear-gradient(to bottom,  #3f4247 0%,#000000 100%); /* W3C */
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3f4247', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+
+			}
+			
+			#menu ul{
+				list-style:none;
+				width:800px;
+				padding:0;
+				margin:0 auto;
+				
+			}
+			#menu li {
+				float: left;				
+			}
+			#menu li a {
+	text-decoration: none;
+	display: block;
+	padding: 15px 28px;
+	color: #FFFFFF;
+	border-right: 1px solid #080808;
+	box-shadow: -1px 0 #000 inset;
+	-moz-box-shadow: -1px 0 #000 inset;
+	-webkit-box-shadow: -1px 0 #000 inset;
+	text-shadow: 0 1px #000;
+	-webkit-transition: all 0s ease-in 0s;
+	-moz-transition: all 0s ease-in 0s;
+	-ms-transition: all 0s ease-in 0s;
+	-o-transition: all 0s ease-in 0s;
+	transition: all 0s ease-in 0s;
+			}
+			#menu li a:hover{
+				color: #FFFFFF;
+				background: #000000;
+			}
+			
+			.rajini {
+				color: #FFF;
+				font-family: "Comic Sans MS", cursive;
+				letter-spacing: 1px;
+				}
+			.nation {
+				color: #FF4A4A;
+				font-weight:bold;
+				font-family:Tahoma, Geneva, sans-serif;
+				-webkit-transition: all ease-in-out 1s;
+				-moz-transition: all ease-in-out 1s;
+				-ms-transition: all ease-in-out 1s;
+				-o-transition: all ease-in-out 1s;
+				transition: all ease-in-out 1s;
+				letter-spacing: 1px;
+				}
+			.nation:hover {
+				color: #F00;
+				}
+			#menu li.active a{
+				background: -moz-linear-gradient(top,  #3f4247 0%, #000000 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3f4247), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #3f4247 0%,#000000 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #3f4247 0%,#000000 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #3f4247 0%,#000000 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #3f4247 0%,#000000 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3f4247', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+			}
+		#menu li a:active {
+	background-color: #000;
+}
+		#menu ul.login{
+			list-style:none;
+			padding-left:900px;
+			margin:0 auto;
+			}
+		#menu li.login{
+			float:left;
+		}
+		#menu li.login a {
+			border-left:1px solid #080808;
+		}

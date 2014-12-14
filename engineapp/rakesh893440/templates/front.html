@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% set providers = [
+  ('google', '/auth/google'),
+  ('facebook', '/auth/facebook'),
+  ('twitter', '/auth/twitter'),
+  ('yahoo', '/auth/appengine_openid?provider=yahoo.com'),
+  ('linkedin', '/auth/linkedin'),
+  ('aol', '/auth/appengine_openid?provider=aol.com'),
+  ('myopenid', '/auth/appengine_openid?provider=myopenid.com'),
+  ('myspace', '/auth/appengine_openid?provider=myspace.com'),
+  ('github', '/auth/github'),
+] -%}
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+	
+	<body>
+		<a href='/blog'><h1>Login</h1></a>
+		<hr><br>
+		{% if profiles and profiles.__len__ %}
+        {% for p in profiles %}
+                 
+		  <h2>Welcome {{p['user_info']['info']['nickname']}}</h2>
+        </div>
+      {% endfor %}
+    {% else %}
+		<h3>Login please</h3>
+	{%endif%}
+		<br>
+		<div class="blog"><a href ="/auth/google">Google</a></div>
+		<div class="blog"><a href ="/auth/facebook">FB</a></div>
+		<div class="blog"><a href ="/auth/twitter">Twitter</a></div>
+		<hr>
+		<h2>Profiles</h2>
+    {% if profiles and profiles.__len__ %}
+      <h5>Connect aditional providers account to view the information that EngineAuth collects.</h5>
+      {% for p in profiles %}
+        <h3>{{ p.key.id() }}</h3>
+        <div>
+        <pre class="prettyprint">
+          {{ p.to_dict()|do_pprint() }}
+        </pre>
+		  <h2>Welcome {{p['user_info']['info']['nickname']}}</h2>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert-message block-message info">
+        No data yet. Try connecting an account
+      </div>
+    {% endif %}</body>
+
+</html>

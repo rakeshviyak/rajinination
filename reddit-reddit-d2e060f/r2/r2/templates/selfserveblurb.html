@@ -1,0 +1,118 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+from r2.lib.pages import Feedback
+from r2.lib.template_helpers import static
+%>
+<link rel="stylesheet" type="text/css" href="${static('selfserve_ads/style.css', allow_gzip=False)}"/>
+<script src="${static('js/lib/jquery.cycle.min.js', allow_gzip=False)}" type="text/javascript"></script>
+<script src="${static('selfserve_ads/script.js', allow_gzip=False)}" type="text/javascript"></script>
+
+<div class="self-service instructions">
+    <!-- 	Outer column container, for CSS control (If the need arises) -->
+    <div class="column-container">
+        <h1 class="redditad-header">reddit advertising</h1>
+        <div class="left-col column">
+            <div class="col-trigger">
+                <img src="${static('selfserve_ads/col1.png')}" width="220px" height="128px" alt="" class="image"/>
+
+                <h2>Reach your audience</h2>
+                <ul>
+                    <li>Get your message to millions of viewers</li>
+                    <li>Target viewers on what THEY are interested in, not what their demographic is</li>
+                    <li>Use text, images, and video in your ads</li>
+                </ul>
+            </div>
+        </div>
+        <div class="center-col-1 column">
+            <div class="col-trigger">
+                <img src="${static('selfserve_ads/col2.png')}" width="220px" height="128px" alt="" class="image"/>
+
+                <h2>Control your budget</h2>
+                <ul>
+                    <li>Bid-based system ensures you get a fair piece of the daily pie</li>
+                    <li>Low CPM, even with low bids</li>
+                </ul>
+            </div>
+        </div>
+        <div class="center-col-2 column">
+            <div class="col-trigger">
+                <img src="${static('selfserve_ads/col3.png')}" width="220px" height="128px" alt="" class="image"/>
+
+                <h2>Interact with customers</h2>
+                <ul>
+                    <li>reddit ads have comments, view what people think in real-time</li>
+                    <li>Up and Down vote system, see how much people enjoy your link, in one metric</li>
+                </ul>
+            </div>
+        </div>
+        <div class="right-col column">
+            <div class="col-trigger">
+                <img src="${static('selfserve_ads/col4.png')}" width="220px" height="128px" alt="" class="image"/>
+
+                <h2>Track your stats</h2>
+                <ul>
+                    <li>View graphs of your impressions and clicks</li>
+                    <li>All stats available for download</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="clear:both;"></div>
+        <div class="col-bottom-box">
+            <div class="ad-launch-buttons">
+                <a href="/promoted/new_promo" class="create-ad-button button">Create an ad</a>
+                <a href="/promoted" class="manage-ads">manage existing ads</a>
+            </div>
+            <div class="bottom-box-title">Start advertising today!</div>
+            <p><a href="/selfserviceoatmeal">A comic that explains it all.</a><br/>
+                Have questions? Read the&#32;<a href="/help/selfserve">FAQ</a>, or send us an&#32; <a href="mailto:selfservicesupport@reddit.com?subject=Questions about reddit advertising">email</a>.
+            <br/>
+            Interested in a bigger campaign?&#32;<a href="mailto:marketing@reddit.com?subject=campaign%20inquiry">Talk to our sales team</a>.
+            </p>
+            <div style="clear:both;"></div>
+        </div>
+        <div class="col-bottom-box" id="testimonial-parent">
+            <div class="testimonial-title">See what people are saying:</div>
+            ##Adding a new testimonial is very very simple
+            ##Javascript takes care of everything else
+            ##Try and keep each the same length, if at all possible, otherwise it looks odd on smaller ones
+            <div id="testimonial-holder">
+                <div class="testimonial"><q>My reddit ad (above) has yielded the highest ROI (by far) compared to the
+                    other ad platforms&hellip;</q>
+                    <cite>-<a
+                            href="http://www.gabrielweinberg.com/blog/2010/03/my-duck-duck-go-reddit-ad-by-the-numbers.html"
+                            target="blank" rel="nofollow">Gabriel Weinberg</a></cite>
+                </div>
+                <div class="testimonial"><q>Reddit is without a doubt the web's hottest social news
+                    community...Advertising here is reaching one of the web's most influential communities.</q>
+                    <cite>-<a
+                            href="http://www.b2cmarketinginsider.com/online-marketing/7-paid-promotional-tactics-you-should-test-016208"
+                            target="blank" rel="nofollow">B2C Marketing Insider</a></cite>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+ 

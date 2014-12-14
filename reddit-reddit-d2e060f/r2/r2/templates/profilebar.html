@@ -1,0 +1,163 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%! 
+   from r2.lib.filters import edit_comment_filter, unsafe, safemarkdown
+   from r2.lib.template_helpers import static, format_number
+ %>
+<%namespace file="utils.html" import="submit_form, plain_link, thing_timestamp"/>
+<%namespace file="printablebuttons.html" import="toggle_button"/>
+
+<div class="titlebox">
+  <h1>
+    ${thing.user.name}
+
+    %if c.user_is_admin:
+      <span class="account-notes">
+        #${thing.user._id}
+
+        %if thing.user._deleted:
+          <span class="unusual">(deleted)</span>
+        %endif
+
+        %if thing.user._spam:
+          <span class="unusual">(banned)</span>
+        %endif
+      </span>
+    %endif
+
+  </h1>
+
+  %if c.user != thing.user:
+    <div>
+    ${toggle_button("fancy-toggle-button", _("+ friends"), _("- friends"),
+         "friend('%s', '%s', 'friend')" % (thing.user.name, thing.my_fullname),
+         "unfriend('%s', '%s', 'friend')" % (thing.user.name, thing.my_fullname),
+         css_class = "add", alt_css_class = "remove",
+         reverse = thing.is_friend, login_required=True)}
+    </div>
+  %endif
+
+  <span class="karma">${format_number(thing.user.safe_karma)}</span>
+  &#32;
+  ${_("link karma")}
+
+  <br/>
+  <span class="karma comment-karma">${format_number(thing.user.comment_karma)}</span>
+  &#32;
+  ${_("comment karma")}
+
+  %if c.user_is_admin or (c.user.gold and c.user == thing.user):
+    <table id="per-sr-karma"
+      % if not c.user_is_admin:
+      class="more-karmas"
+      % endif
+      >
+     <thead>
+        <tr>
+          <th id="sr-karma-header">subreddit</th>
+          <th>link</th>
+          <th>comment</th>
+        </tr>
+     </thead>
+     <%
+       karmas = thing.user.all_karmas()
+     %>
+     <tbody>
+     %for i, (label, title, lc, cc) in enumerate(karmas):
+        <tr
+        % if c.user_is_admin and i >= 5:
+          class="more-karmas"
+        % endif
+        >
+        % if title:
+          <th class="helpful" title="${title}"><span>${label}</span></th>
+        % else:
+          <th>${label}</th>
+        % endif
+          <td>${lc}</td>
+          <td>${cc}</td>
+        </tr>
+      %endfor
+      </tbody>
+    </table>
+    % if not c.user_is_admin or len(karmas) > 5:
+    <div class="giftgold karma-breakdown">
+      <a href="javascript:void(0)"
+         onclick="$('.more-karmas').show();$(this).hide();return false">
+         show karma breakdown by subreddit
+      </a>
+    </div>
+    % endif
+  %endif
+
+  %if thing.gold_remaining:
+    <div class="rounded gold-accent gold-expiration-info">
+      <div class="gold-remaining"
+           %if thing.gold_expiration:
+             title="${thing.gold_expiration.strftime('%Y-%m-%d')}"
+           %endif
+           >
+        <span class="karma">
+          ${thing.gold_remaining}
+        </span>
+        &#32;
+        ${_("of reddit gold remaining")}
+      </div>
+      %if getattr(thing, "gold_subscr_id", None):
+        <%  
+          paypal_link = ("https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=%s" % g.goldthanks_email)
+         %>
+         <div>
+          <a href=${paypal_link}>
+            ${_("Recurring Paypal subscription")}
+          </a>
+          &#32;
+          ${thing.gold_subscr_id}
+        </div>
+      %endif
+    </div>
+  %endif
+
+%if getattr(thing, "goldlink", None):
+  <div class="giftgold">
+    <a href="${thing.goldlink}">
+      ${thing.giftmsg}
+    </a>
+  </div>
+%endif
+
+  <div class="bottom">
+    %if thing.user != c.user:
+      <img src="${static('mailgray.png')}"/>
+      &#32;
+      ${plain_link(_("send message"), "/message/compose/?to=%s" % thing.user.name)}
+    %endif
+
+    <span class="age">
+      ${_("redditor for")}&#32;${thing_timestamp(thing.user)}
+    </span>
+  </div>
+
+  <div class="clear"> </div>
+
+</div>

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  
+  {% if logged_in %}
+    <a href="{{ url_for('profile') }}" class="btn">{{user.name}} profile</a>
+    <a href="/logout" class="btn">logout</a>
+  {% else %}
+    <!-- Button to trigger modal -->
+	<a href="#myModal" role="button" class="btn" data-toggle="modal">Launch demo modal</a>
+ 
+<!-- Modal -->
+	<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal" href="#">&times;</a>
+		<h3 id="myModalLabel">You need to login via one of these</h3>
+	</div>
+	<div class="modal-body">
+		<div class="row pagination-centered">
+		<div class="spacer"><a class="btn" href="/auth/facebook"><img src="/static/img/Loginlogo/facebook-logo-large.png" alt="Facebook Logo"></a></div>
+		<div class="spacer"><a class="btn" href="/auth/twitter"><img src="/static/img/Loginlogo/twitter-logo-large.png" alt= "Twitter Logo" ></a></div>
+		<div class="spacer"><a class="btn" href="/auth/google"><img src="/static/img/Loginlogo/google-logo-large.png" alt="Google Logo"></a></p></div>
+		</div>
+		<div class="muted"><small>We dont store your password and email<small></div>
+		
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		
+	</div>
+	</div>
+
+	<!--
+	<p>Try logging in with one of these:</p>
+	
+
+    <a href="/auth/google"><img src="/static/img/Loginlogo/google-logo-large.png" alt="Google Logo" hspace="50"></a>
+    <a href="/auth/facebook"><img src="/static/img/Loginlogo/facebook-logo-large.png" alt="Facebook Logo" hspace="50"></a>
+	<a href="/auth/twitter"><img src="/static/img/Loginlogo/twitter-logo-large.png" alt= "Twitter Logo" hspace="50"></a>
+    <a href="/auth/openid?identity_url=me.yahoo.com" class="btn">Yahoo! (OpenID)</a>
+    <a href="/auth/linkedin" class="btn">LinkedIn</a>
+    <a href="/auth/windows_live" class="btn">Windows Live</a>-->
+  {% endif %}
+{% endblock %}

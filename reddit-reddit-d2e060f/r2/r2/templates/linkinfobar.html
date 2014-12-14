@@ -1,0 +1,84 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.strings import strings
+   from r2.lib.template_helpers import format_number, html_datetime
+ %>
+
+
+<%namespace file="printablebuttons.html" import="state_button" />
+<%namespace file="printable.html" import="thing_css_class" />
+
+
+
+<div class="linkinfo">
+  <div class="date">
+    <span>
+      ${_("this post was submitted on")}
+      &#32;
+    </span>
+    <time datetime="${html_datetime(thing.a._date)}">
+      ${thing.a._date.strftime(thing.datefmt)}
+    </time>
+  </div>
+
+  <div class="score">
+    ${unsafe(strings.person_label % dict(num = format_number(thing.a.score),
+                                         persons = ungettext("point", "points", 
+                                         thing.a.score)))}
+    <% percent = int(float(thing.a.upvotes) / max(thing.a.upvotes + thing.a.downvotes, 1) * 100) %>
+    &#32;(${percent}% ${_("like it")})
+  </div>
+
+  <span class="upvotes">
+    ${unsafe(strings.person_label % dict(num = format_number(thing.a.upvotes),
+                                         persons = ungettext("up vote", "up votes", 
+                                         thing.a.upvotes)))}
+  </span>
+  &#32;
+  <span class="downvotes">
+    ${unsafe(strings.person_label % dict(num = format_number(thing.a.downvotes),
+                                         persons = ungettext("down vote", "down votes", 
+                                         thing.a.downvotes)))}
+  </span>
+
+%if getattr(thing.a, "shortlink", None):
+  <div class="shortlink">
+    shortlink:
+    &#32;
+    <input type="text" value="http://${thing.a.shortlink}" readonly="readonly" id="shortlink-text" />
+  </div>
+%endif
+
+  <table>
+    %if c.user_is_admin:
+      <%include file="adminlinkinfo.html"/>
+    %endif
+
+    %if c.user_is_sponsor:
+      <%include file="linkpromoteinfobar.html"/>
+    %endif
+  </table>
+</div>
+
+

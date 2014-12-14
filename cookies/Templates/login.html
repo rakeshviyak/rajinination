@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+	
+	<body>
+		<h1>Login</h1>
+
+		<form method="post">
+			<table>
+				<tr>
+					<td class="label">Username</td>
+					<td><input type="text" name="username" value={{username}}></td>
+				</tr>
+				
+				<tr>
+					<td class="label">Password</td>
+					<td><input type="password" name="password" value=""></td>
+				</tr>
+				<tr>
+					<td class="label">{{login_error}}</td>
+				</tr>
+			</table>
+			<br>
+			<input type="submit">
+		</form>
+		
+	</body>
+
+</html>

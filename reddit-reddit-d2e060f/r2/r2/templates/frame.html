@@ -1,0 +1,87 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%
+   from r2.lib.template_helpers import add_sr, static
+   from r2.lib.utils import query_string, domain
+   from r2.lib.filters import _force_unicode
+ %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+  <head>
+    <title>${thing.title}</title>
+    %if thing.url:
+      <!-- quick hack to guess at proper favicons. this doesn't work
+           if they are using their own <link> to specify the favicon
+           instead of just having /favicon.ico exist. -->
+      <link rel="icon" href="http://${domain(thing.url)}/favicon.ico" type="image/x-icon">
+    %endif
+    <link rel="image_src" type="image/png"
+          %if thing.thumbnail:
+             href="${thing.thumbnail}"
+          %else:
+             href="${static('icon-touch.png')}"
+          %endif
+    />
+
+  </head>
+  <frameset framespacing="0" frameborder="0" border="0" rows="20px, 100%"
+    %if not thing.fullname:
+     onload="window.frames[1].focus();"
+    %endif
+## When thing.fullname is present, innertoolbarframe.html will take care of
+## the focus.
+    >
+
+    %if thing.fullname:
+      <frame frameborder="0" border="0" scrolling="no" name="reddit_top"
+       noresize="1" src="${add_sr('/toolbar/toolbar?id=' + thing.fullname)}"
+      />
+     <frame frameborder="0" border="0"
+            src="${add_sr('/toolbar/inner?id='+thing.fullname)}" name="inner_toolbar" />
+    %else:
+      <frame frameborder="0" border="0" scrolling="no" name="reddit_top"
+       src="${add_sr('/toolbar/toolbar' +
+                     query_string(dict(url = thing.url,
+                                       title = _force_unicode(thing.title))))}"
+      />
+      <frame frameborder="0" border="0"
+             src="${thing.url}" name="inner_toolbar" />
+    %endif
+  </frameset>
+
+   <!-- Internet Explorer has a "feature" called "friendly error
+        messages" that defaults to being turned on, where it detects
+        certain remote error conditions (among them, 404s) such that
+        the response (presumably an error descriptor page) is less
+        than some size (512 bytes for 404s). If that happens, it
+        replaces the remote error message with a more "friendly"
+        description of the error, which obscures the server's error
+        message. Historically, this is because Apache's and IIS's
+        error messages are famously non-helpful, and were less than
+        that minimum size. This unnecessarily verbose comment serves
+        only to cause this page (whose status code may be a 404, set
+        in toolbar.py:GET_s) to go over that minimum size, so that we
+        can force our content to be shown to IE users with "friendly
+        error messages", even on braindead browsers. -->
+</html>

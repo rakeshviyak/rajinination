@@ -1,0 +1,5 @@
+<div id="{{page}}">
+{% for h in hots %}
+	{{ h.imageid.get().render() | safe }}
+{% endfor %}
+</div>

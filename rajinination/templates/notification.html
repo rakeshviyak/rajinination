@@ -1,0 +1,20 @@
+
+	{% if loginfirst %}
+		<div class="alert alert-success">
+			Hello {{user.name}}, welcome to Rajinination!!! Have Fun :)
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+		</div>
+	{% endif %}
+	{% if logoutfirst %}
+		<div class="alert alert-warning">
+			Thank you. You are logged out successfully. Hope to see you again :) Have Fun :)
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+		</div>
+	{% endif %}
+	{% if sentmail %}
+		<div class="alert alert-info">
+			Thank you for your email. We will get back to you asap :)
+			<a class="close" data-dismiss="alert" href="#">&times;</a>
+		</div>
+	{% endif %}
+	

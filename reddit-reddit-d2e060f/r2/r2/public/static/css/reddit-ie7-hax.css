@@ -1,0 +1,39 @@
+.toolbar .middle-side input[type=text] {
+    border: none;
+    height: 17px;
+}
+
+.entry.unvoted .score.unvoted { display: inline;  }
+.entry.unvoted div.score.unvoted { display: inline;  }
+
+/* Award name font is too big in IE */
+.award-square .award-name {
+  font-size:18px;
+}
+
+.message .midcol { 
+    width: 15px; 
+}
+
+.tabmenu {
+    display: inline;
+    zoom: 1;
+}
+
+#mail {
+    top: 0;
+}
+
+#header-img.default-header {
+	display: block;
+	float: left;
+}
+
+#header-bottom-left .tabmenu {
+	position: absolute;
+	bottom: -1px;
+}
+
+#header-bottom-right {
+	clear: both;
+}

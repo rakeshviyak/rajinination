@@ -1,0 +1,163 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.template_helpers import add_sr
+   from r2.lib.strings import strings
+   from r2.lib.utils import UrlParser
+   import random
+ %>
+<%namespace file="captcha.html" import="captchagen"/>
+<%namespace file="utils.html" import="error_field, plain_link, img_link"/>
+
+## default content 
+%if c.user_is_loggedin:
+  <p class="error">${_("you are logged in. go use the site!")}</p>
+%else:
+  ${login_panel(login_form, 
+                user_reg = thing.user_reg, user_login = thing.user_login, 
+                dest=thing.dest)}
+  %if not g.disable_captcha:
+  <script type="text/javascript">
+    $.request("new_captcha");
+  </script>
+  %endif
+%endif
+
+<%def name="login_form(register=False, user='', dest='', include_tos=True)">
+  <%
+    op = "reg" if register else "login"
+    base = g.https_endpoint if not c.cname else ''
+    tabindex = 3 if register else 2
+  %>
+  <form id="login_${op}" method="post" 
+        action="${add_sr(base + '/post/' + op, nocname=not c.authorized_cname)}"
+        class="user-form ${'register-form' if register else 'login-form'}">
+    %if c.cname:
+       <input type="hidden" name="${UrlParser.cname_get}" 
+              value="${random.random()}" />
+    %endif
+    <input type="hidden" name="op" value="${op}" />
+    %if dest:
+      <input type="hidden" name="dest" value="${dest}" />
+    %endif
+    <div>
+      <ul>
+        <li class="name-entry">
+          <label for="user_${op}">${_('username')}:</label>
+          <input value="${user}" name="user" id="user_${op}" 
+                 type="text" maxlength="20" tabindex="${tabindex}" autofocus />
+          %if register:
+            <span class="throbber"></span>
+            <span class="notice-taken">${_('try another')}</span>
+            <span class="notice-available">${_('available!')}</span>
+            ${error_field("BAD_USERNAME", "user", kind="span")}
+            ${error_field("USERNAME_TAKEN", "user", kind="span")}
+            ${error_field("USERNAME_TAKEN_DEL", "user", kind="span")}
+          %endif
+        </li>
+      %if register:
+        <li>
+          <label for="email_${op}">
+            ${_('email')}: &nbsp;<i>(${_('optional')})
+          </i></label>
+          <input value="" name="email" id="email_${op}" 
+                 type="text" maxlength="50" tabindex="${tabindex}"/>
+          %if register:
+            ${error_field("BAD_EMAILS", "email", kind="span")}
+          %endif
+        </li>
+      %endif
+        <li>
+          <label for="passwd_${op}">${_('password')}:</label>
+          <input id="passwd_${op}" name="passwd" type="password" 
+                 tabindex="${tabindex}"/>
+          %if register:
+            ${error_field("BAD_PASSWORD", "passwd", kind="span")}
+          %else:
+            ${error_field("WRONG_PASSWORD", "passwd", kind="span")}
+          %endif
+        </li>
+      %if register:
+        <li>
+          <label for="passwd2_${op}">${_('verify password')}:</label>
+          <input name="passwd2" id="passwd2_${op}" 
+                 type="password" tabindex="${tabindex}"/>
+          ${error_field("BAD_PASSWORD_MATCH", "passwd2", kind="span")}
+        </li>
+        <li>
+          %if not g.disable_captcha:
+          <% iden = hasattr(thing, "captcha") and thing.captcha.iden or '' %>
+          ${captchagen(iden, tabulate=True, label=False, size=30, tabindex=tabindex)}
+          %endif
+          ${error_field("RATELIMIT", "ratelimit")}
+          ${error_field("RATELIMIT", "vdelay")}
+        </li>
+      %endif
+      <li>
+        <input type="checkbox" name="rem" id="rem_${op}" tabindex="${tabindex}" />
+        <label for="rem_${op}" class="remember">
+          ${_('remember me')}
+        </label>
+      </li>
+      %if not register:
+      <li>
+        <a class="recover-password" href="/password">
+          ${_("recover password")}
+        </a>
+      </li>
+      %endif
+    </ul>
+      <p class="submit">
+        <button type="submit" class="button" tabindex="${tabindex}">
+          ${register and _("create account") or _("login")}
+        </button>
+        <span class="throbber"></span>
+        <span class="status"></span>
+      </p>
+    </div>
+  </form>
+</%def>
+
+
+<%def name="login_panel(lf, user_reg = '', user_login = '', dest='')">
+  <div class="login-form-section divide">
+    <h3>${_("create a new account")}</h3>
+    <p class="tagline">
+      ${_("all it takes is a username and password")}
+    </p>
+    ${lf(register=True, user=user_reg, dest=dest)}
+    <p>
+      <span class="orangered">
+        ${_("is it really that easy? only one way to find out...")}
+      </span>
+    </p>
+  </div>
+  <div class="login-form-section">
+    <h3>${_("login")}</h3>
+    <p class="tagline">
+      ${_("already have an account and just want to login?")}
+    </p>
+    ${lf(user = user_login, dest = dest)}
+  </div>
+  <div class="clear"></div>
+</%def>

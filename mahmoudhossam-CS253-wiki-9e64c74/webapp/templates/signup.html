@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" >
+        <title>Sign up</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% get_static_prefix %}style.css">
+    </head>
+
+    <body>
+        <h1>Sign up for an account</h1>
+
+        <form method="POST">
+            <table>
+                <tr>
+                    <td>Username</td><td><input type="text" name="username" value="{{ usr_val }}"><span class="error">{{ usr }}</span></td>
+                </tr>
+                <tr>
+                    <td>Password</td><td><input type="password" name="password" value="{{ pw_val }}"><span class="error">{{ pw }}</span></td>
+                </tr>
+                <tr>
+                    <td>Verify Password</td><td><input type="password" name="verify" value="{{ verify_val }}"><span class="error">{{ verify }}</span></td>
+                </tr>
+                <tr>
+                    <td>Email(optional)</td><td><input type="text" name="email" value="{{ email_val }}"><span class="error">{{ email }}</span></td>
+                </tr>
+            </table>
+            <input type="submit" value="submit" id="submit">
+        </form>
+    </body>
+</html>

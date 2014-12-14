@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+Editing {{ page_name }}
+{% endblock %}
+
+{% block content %}
+<h1>Editing {{ page_name }}</h1>
+<form method="POST">
+    <textarea name="content">{{ page.content }}</textarea>
+    <br>
+    <input type="submit">
+</form>
+{% endblock %}

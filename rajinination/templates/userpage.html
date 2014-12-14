@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-unit nopadding hero-box-shadow">
+
+	<div class="well permalink-content horizontal-line">
+	
+		<div class="span12" style="margin-bottom:20px">
+			<span class="imgavatar span6 img-polaroid">
+				{% if u.avatar_url%}
+					<center><a href="{% if u.link %}{{ u.link }}{% endif %}"><img src="{{ u.avatar_url }}"></a></center>
+				{%else%}
+					<center><a href="{% if u.link %}{{ u.link }}{% endif %}"><img src="/static/img/missing-avatar.png" alt="missing avatar"></a></center>
+				{%endif%}
+			</span>
+			<span class="user_details pull-right span6">
+				<h3 style="margin-top: 0; padding-top: 0">{{ u.name }}</h3>
+				<div class="btn {% if not u.link %} disabled {% endif %}"><a href="{% if u.link %}{{ u.link }}{% endif %}" target="_blank" rel="nofollow">Social Profile</a></div>
+			</span>
+		</div>
+		<div class="">
+		<ul id="myTab" class="nav nav-pills" style="margin:0px;border-radius:0px;">
+			<li class="{% if images %}active{% endif %}"><a class="txt-color-nav" href="/u/{{u.key.id()}}"><small>Posts</small></a></li>
+			<li class="{% if votes %}active{% endif %}"><a class="txt-color-nav" href="/u/{{u.key.id()}}/likes"><small>Likes</small></a></li>
+		</ul>
+		</div>
+	</div>
+		<div id="" class="" style="">
+		{% if images %}
+			
+				
+					{% for image in images %}
+						
+						{% if image %}
+							{{image.render() | safe}}
+						{% endif %}
+		
+					{% endfor %}
+			
+		{% endif %}
+		{% if votes %}
+			
+				
+					{% for vote in votes %}
+						{% if vote %}
+							{{vote.imageid.get().render()|safe}}
+						
+						{% endif %}
+						
+					{% endfor %}
+				
+			
+		{% endif %}
+		</div>
+		<div class="special-padding pager-padding">
+			{% include 'pager.html' %}
+		</div>
+	
+</div>
+ 
+{% endblock %}

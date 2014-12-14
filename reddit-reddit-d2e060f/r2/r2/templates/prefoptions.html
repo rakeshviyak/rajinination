@@ -1,0 +1,329 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from r2.lib.template_helpers import add_sr
+   from r2.lib.utils import UrlParser
+   import random
+%>
+<%namespace file="utils.html" import="language_tool, language_checkboxes, plain_link"/>
+
+<%def name="checkbox(text, name, disabled = False, disabled_text = '', prefix = 'pref_')">
+    <input name="${name}" id="${name}" type="checkbox"
+               %if getattr(c.user, prefix + name):
+                 checked="checked"
+               %endif
+               %if disabled:
+                 disabled="disabled"
+               %endif
+               />
+    <label class="${'disabled' if disabled else ''}" for="${name}">
+      ${text}
+    </label>
+    %if disabled and disabled_text:
+      &#32;<span class="little gray">${disabled_text}</span>
+    %endif
+</%def>
+
+<%def name="link_options()">
+  <select name="numsites" style="margin: 0 .5em 0 .5em">
+        %for x in [10, 25, 50, 100]:
+        <option ${x == c.user.pref_numsites and "selected='selected'" or ""}>
+          ${x}
+        </option>
+        %endfor
+  </select>
+</%def>
+
+<%def name="media_radio(val, label)">
+  <input id="media_${val}" class="nomargin" 
+         type="radio"  value="${val}" name="media"
+         ${"checked='checked'" if c.user.pref_media == val else ''} /> 
+  <label for="media_${val}">${label}</label>
+  <br/>
+</%def>
+
+<%def name="num_input(s, name)">
+  <input type="text" size="4" maxlength="4" 
+         name="${name}" style="margin:  0 .5em 0 .5em"
+         value="${s if s is not None else ''}" />
+</%def>
+
+%if c.user_is_loggedin and thing.done:
+  <p class="error">${_("your preferences have been updated")}</p>
+%endif
+
+<%
+   if c.user_is_loggedin:
+       action = "/post/options" 
+   else:
+       action = "/post/unlogged_options" 
+   if not c.frameless_cname:
+       action = add_sr(action, sr_path = False, nocname=True)
+ %>
+<form action="${action}" method="post" class="pretty-form short-text">
+  <input type="hidden" name="uh" value="${c.modhash}" />
+  %if c.cname:
+    <input type="hidden" name="${UrlParser.cname_get}" value="${random.random()}" />
+  %endif
+<table class="content preftable">
+  <tr>
+    <th>${_("interface language")}</th>
+    <td class="prefright">
+      ${language_tool(allow_blank = False, show_regions = True,
+                      default_lang = c.user.pref_lang)}
+      &#32;<span class="little gray hover">(*) ${_("incomplete")}
+      &#32;${plain_link(_("volunteer to translate"), "/i18n")}</span>
+    </td>
+  </tr>
+  <tr>
+    <th>${_("content language")}</th>
+    <td class="prefright">
+      ${language_checkboxes(default = c.user.pref_content_langs)}
+    </td>
+  </tr>
+  %if c.user_is_loggedin:
+  <tr>
+    <th>${_("clicking options")}</th>
+    <td class="prefright">
+      ${checkbox(_("display links with a reddit toolbar"), "frame")}
+      <br/>
+      ${checkbox(_("open links in a new window"), "newwindow")}
+    </td>
+  </tr>
+  <tr>
+    <th>${_("media")}</th>
+    <td class="prefright">
+      %if not c.user.pref_compress:
+      ${media_radio("on", _("show thumbnails next to links"))}
+      ${media_radio("off", _("don't show thumbnails next to links"))}
+      ${media_radio("subreddit", _("show thumbnails based on that reddit's media preferences"))}
+     ${checkbox(_("make safe(r) for work "), "no_profanity", disabled = not c.user.pref_over_18, disabled_text = "(requires over 18)")}
+      &#32;
+      <span class="little gray">
+        ${_("(Don't show thumbnails next to anything labeled NSFW)")}
+      </span>
+      %else:
+      <p class="error">${_("to enable thumbnails, disable compressed link display")}</p>
+      <input type="hidden" name="media" value="${c.user.pref_media}"/>
+      %endif
+     <br/>
+    </td>
+  </tr>
+  <tr>
+    <th>${_("link options")}</th>
+    <td class="prefright">
+%if c.user_is_loggedin and c.user.jury_betatester():
+      <p>
+        ${checkbox(_("show the spotlight box on the front page"), "organic")}
+        &#32;
+        <span class="little gray">
+          ${_("(it shows new and promoted links, and gives you a say in what's spam and what isn't.)")}
+        </span>
+      </p>
+%else:
+      <p>${checkbox(_("show me new links on the front page"), "organic")}</p>
+%endif
+
+      <p>${checkbox(_("show me links I've recently viewed"), "clickgadget")}</p>
+      <p>${checkbox(_("compress the link display"), "compress")}</p>
+      <p>${checkbox(_("don't show links after i've liked them"), "hide_ups")}
+         &#32;
+         <span class="little gray">${_("(except my own)")}</span>
+      </p>
+      <p>${checkbox(_("don't show links after i've disliked them"), "hide_downs")}
+         &#32;
+         <span class="little gray">${_("(except my own)")}</span>
+      </p>
+      <%
+         # stuff I can soon delete:
+         _("display")
+         _("links at once")
+         _("don't show me sites with a score less than")
+         _("don't show me comments with a score less than")
+         _("comments by default")
+         %>
+      <p>
+        ${unsafe(_("display %(num)s links at once") % \
+        dict(num=capture(link_options)))}
+      </p>
+      <%
+         input = capture(num_input, c.user.pref_min_link_score,
+         'min_link_score')
+         %>
+      <p>
+      ${unsafe(_("don't show me sites with a score less than %(num)s") % dict(num = input))}
+      &#32;<span class="little gray">${_("(blank for none)")}</span>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <th>${_("comment options")}</th>
+    <td class="prefright">
+    <% 
+       input = capture(num_input, c.user.pref_min_comment_score,
+                       'min_comment_score')
+       %>
+    <p>
+      ${unsafe(_("don't show me comments with a score less than %(num)s") % dict(num = input))}
+      &#32;<span class="little gray">${_("(blank for none)")}</span>
+    </p>
+    <p>
+      <% 
+       input = capture(num_input, c.user.pref_num_comments,
+       'num_comments')
+       %>
+    <% s = c.user.pref_num_comments %>
+    ${unsafe(_("display %(num)s comments by default") % \
+    dict(num = input))}
+    &#32;
+    <span class="little gray">
+      (1 - ${g.max_comments});
+      &#32;
+      ${_("the smaller the number, the faster your comments pages will load")}
+    </span>
+    </td>
+  </tr>
+  <tr>
+    <th>${_("messaging options")}</th>
+    <td class="prefright">
+      ${checkbox(_("show message conversations in the inbox"), \
+         "threaded_messages")}
+      &#32;<span class="little gray">
+        ${_("(only applies when you go to the 'messages' panel)")}
+      </span>
+      <br/>
+      %if c.user.pref_threaded_messages:
+        ${checkbox(_("collapse messages after I've read them"), \
+           "collapse_read_messages")}
+        &#32;<span class="little gray">
+          ${_("(otherwise, you'll have to collapse them yourself)")}
+        </span>
+        <br/>
+      %endif
+      ${checkbox(_("mark messages as read when I open my inbox"), \
+         "mark_messages_read")}
+      &#32;<span class="little gray">
+        ${_("(otherwise, they will be marked as read when you click them)")}
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <th>${_("display options")}</th>
+    <td class="prefright">
+      ${checkbox(_("allow reddits to show me custom styles"), "show_stylesheets")}
+      <br/>
+      ${checkbox(_("show user flair"), "show_flair")}
+      <br/>
+      ${checkbox(_("show link flair"), "show_link_flair")}
+      %if c.user.pref_show_promote is not None:
+        <br/>
+        ${checkbox(_("show promote tab on front page"), 
+          "show_promote")}
+      %endif
+    </td>
+  </tr>
+  <tr>
+    <th>${_("content options")}</th>
+    <td class="prefright">
+      ${checkbox(_("i am over eighteen years old and willing to view adult content"), "over_18")}
+      &#32;<span class="little gray">(${_("required to view some reddits")})</span>
+      <br/>
+        ${checkbox(_("label posts that are not safe for work (NSFW)"), "label_nsfw", disabled = c.user.pref_no_profanity, disabled_text = "(requires not 'safer for work' mode)")}
+      <br/>
+        ${checkbox(_("enable private RSS feeds"), "private_feeds")} 
+       &#32;<span class="little gray">
+        ${_("(available from the 'RSS feed' tab in prefs)")}</span>
+    </td>
+  <tr>
+    <th>${_("privacy options")}</th>
+    <td class="prefright">
+      ${checkbox(_("make my votes public"), "public_votes")}
+      &#32;
+      <span class="little gray">
+        <%
+           link1 = "&#32;<a href='/user/%s/liked'>/user/%s/liked</a>&#32;" % (c.user.name, c.user.name)
+           link2 = "&#32;<a href='/user/%s/disliked'>/user/%s/disliked</a>" % (c.user.name, c.user.name)
+           %>
+        (${unsafe(_("let everyone see %(link1)s and %(link2)s") % dict(link1=link1, link2=link2))})
+      </span>
+      <br/>
+      ${checkbox(_("allow my data to be used for research purposes"), "research")}
+      &#32;
+      <span class="little gray">
+       (
+         <a href="http://www.reddit.com/r/redditdev/comments/dtg4j/want_to_help_reddit_build_a_recommender_a_public/">
+           ${_("details")}
+         </a>
+       )
+      </span>
+      <br />
+      ${checkbox(_("don't allow search engines to index my user profile"), "hide_from_robots")}
+      &#32;
+      <span class="little gray">
+        (
+        <a href="http://www.reddit.com/help/noindex">${_("details")}</a>
+        )
+      </span>
+      <br />
+      ${checkbox(_("load core JS libraries from reddit servers"), "local_js")}
+      &#32;
+      <span class="little gray">
+       (
+         <a href="http://www.reddit.com/help/localjs">
+           ${_("details")}
+         </a>
+       )
+      </span>
+    </td>
+  </tr>
+  %endif
+  %if c.user.gold:
+  <tr class="gold-accent">
+    <th>${_("gold options")}</th>
+    <td class="prefright">
+        ${checkbox(_("show the right sidebar ad box"), "show_adbox")}
+        &#32;<span class="little gray">(${_("the attractive 300x250 one that usually only has reddit t-shirts in it")})</span>
+        <br/>
+        ${checkbox(_("show sponsored links"), "show_sponsors")}
+        &#32;<span class="little gray">(${_("the blue advertisements that sometimes appear on the top of the page")})</span>
+        <br/>
+        ${checkbox(_("show sponsorships"), "show_sponsorships")}
+        &#32;<span class="little gray">(${_("the 300x100 'sponsored by...' images that sometimes appear in sidebars")})</span>
+        <br/>
+        <br/>
+        ${checkbox(_("highlight new comments"), "highlight_new_comments")}
+        &#32;<span class="little gray">
+          (${_("we'll remember your visits for 48 hours and show you which comments you haven't seen yet")})
+        </span>
+        <br/>
+    </td>
+  </tr>
+  %endif
+  <tr>
+    <td>
+      <input type="submit" class="btn" value="${_('save options')}"/>
+    </td>
+  </tr>
+</table>
+
+</form>

@@ -1,0 +1,77 @@
+## The contents of this file are subject to the Common Public Attribution
+## License Version 1.0. (the "License"); you may not use this file except in
+## compliance with the License. You may obtain a copy of the License at
+## http://code.reddit.com/LICENSE. The License is based on the Mozilla Public
+## License Version 1.1, but Sections 14 and 15 have been added to cover use of
+## software over a computer network and provide for limited attribution for the
+## Original Developer. In addition, Exhibit A has been modified to be
+## consistent with Exhibit B.
+##
+## Software distributed under the License is distributed on an "AS IS" basis,
+## WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+## the specific language governing rights and limitations under the License.
+##
+## The Original Code is reddit.
+##
+## The Original Developer is the Initial Developer.  The Initial Developer of
+## the Original Code is reddit Inc.
+##
+## All portions of the code written by reddit are Copyright (c) 2006-2012
+## reddit Inc. All Rights Reserved.
+###############################################################################
+
+<%!
+   from pylons.i18n import _, ungettext
+   from r2.lib.template_helpers import add_sr, get_domain
+   from r2.models import FakeSubreddit
+   from r2.lib.filters import unsafe, safemarkdown
+%>
+<%
+   permalink = add_sr(thing.permalink, force_hostname = True)
+   if thing.mousedown_url:
+      url = thing.mousedown_url
+   else:
+      url = permalink
+   use_thumbs = thing.has_thumbnail and thing.thumbnail and not request.GET.has_key("nothumbs")
+ %>
+<item>
+  <title>${thing.title}</title>
+  <link>${url}</link>
+  <guid isPermaLink="true">${permalink}</guid>
+  <pubDate>${thing._date.strftime('%a, %d %b %Y %H:%M:%S %z')}</pubDate>
+  <description>
+    <%def name="description()" filter="h">
+      %if use_thumbs:
+        <table>
+          <tr><td>
+            <a href="${url}"><img src="${thing.thumbnail}" alt="${thing.title}" title="${thing.title}" /></a>
+          </td><td>
+      %endif
+      <% 
+         domain = get_domain(cname = c.cname, subreddit = False) 
+       %>
+      %if getattr(thing, 'selftext', None):
+        ${unsafe(safemarkdown(thing.selftext))}
+      %endif
+      submitted by <a href="http://${domain}/user/${thing.author.name}">
+         ${thing.author.name}
+      </a>
+       %if thing.different_sr:
+        to <a href="http://${domain}${thing.subreddit.path}">
+         ${thing.subreddit.name}</a> 
+      %endif
+      <br/>
+      <a href="${thing.url}">[link]</a>
+    </%def>
+  ${description()}
+   &lt;a href="${permalink}"&gt;[${thing.comment_label}]&lt;/a&gt;
+   %if use_thumbs:
+     &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+   %endif
+  </description>
+  %if use_thumbs:
+    <media:title>${thing.title}</media:title>
+    <media:thumbnail url="${thing.thumbnail}" />
+  %endif
+</item>
+
